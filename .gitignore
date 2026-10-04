@@ -3,3 +3,8 @@ dist/
 index.html
 .superdesign/
 .DS_Store
+.wrangler/
+.env
+.env.*
+.dev.vars
+.dev.vars.*

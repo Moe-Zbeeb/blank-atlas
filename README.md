@@ -1,6 +1,6 @@
 # Blank Atlas
 
-Play it: https://moe-zbeeb.github.io/blank-atlas/
+Current site: https://moe-zbeeb.github.io/blank-atlas/ (Cloudflare migration pending).
 
 Learn every country on the world map by clicking it. Static web app: no server, no sign-in, progress lives in the browser.
 
@@ -26,33 +26,35 @@ npm run preview
 
 Opens the built site at http://localhost:4173.
 
-## Deploy
+## Deploy to Cloudflare Pages
 
-`dist/` is plain static files, so any static host works.
+The game uses only static assets. Cloudflare Pages serves these for free with unlimited requests and provides an HTTPS `pages.dev` address. No database or paid Workers plan is required for independent players.
 
-Netlify: drag the `dist` folder onto https://app.netlify.com/drop, or
-
-```bash
-npx netlify-cli deploy --dir dist --prod
-```
-
-Vercel:
+Authenticate once and check for an existing project:
 
 ```bash
-npx vercel deploy dist --prod
+npx wrangler login --scopes account:read user:read pages:write
+npx wrangler pages project list
 ```
 
-Cloudflare Pages:
+If `blank-atlas` does not exist in the selected account, create it:
 
 ```bash
-npx wrangler pages deploy dist
+npx wrangler pages project create blank-atlas --production-branch main
 ```
 
-GitHub Pages (how the live site is published): push the contents of `dist/` to the `gh-pages` branch.
+Publish the latest build:
 
 ```bash
-npm run build
-cd dist && git init -q -b gh-pages && git add -A && git commit -qm "Deploy" && git push -f https://github.com/Moe-Zbeeb/blank-atlas.git gh-pages
+npm run deploy:cloudflare
 ```
 
-The site works from a sub-path (all asset URLs are relative). Serve it over HTTPS so the offline cache and "Add to Home Screen" work.
+`wrangler.json` selects the `blank-atlas` project and `dist/` output. The deployment command targets the production branch, `main`, and prints the live URL. Set `CLOUDFLARE_ACCOUNT_ID` when deploying from an account with multiple memberships. Keep credentials outside Git.
+
+This setup uses Direct Upload. Pushing Git commits does not publish the site; run the deployment command after changes. Cloudflare also supports Git-integrated Pages projects, which must be selected when creating the project.
+
+Multiple visitors can play simultaneously and independently. Progress and scores are stored separately in each browser. Team mode is for two teams sharing one device; online matches and synchronized progress need a backend.
+
+Progress from the old GitHub Pages address stays in that browser's storage for that address and does not automatically transfer to Cloudflare.
+
+Keep the old site available until the new deployment has been verified. The site works from a sub-path (all asset URLs are relative). Serve it over HTTPS so the offline cache and "Add to Home Screen" work.
