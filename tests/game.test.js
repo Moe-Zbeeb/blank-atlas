@@ -26,7 +26,7 @@ function game(t,saved){
   if(saved!==undefined)w.localStorage.setItem('blank-atlas.v1',typeof saved==='string'?saved:JSON.stringify(saved));
   w.eval(fs.readFileSync(path.join(root,'node_modules/d3/dist/d3.min.js'),'utf8'));
   w.eval(fs.readFileSync(path.join(root,'node_modules/topojson-client/dist/topojson-client.min.js'),'utf8'));
-  w.eval(script+`;window.gameTest={get state(){return S},get session(){return sess},get mode(){return mode},get region(){return curRegion},C,members,recommended,regionStats,startSession,startChallenge,startTeam,onPick,skip,grade,goHome,startExplore,showInfo,restore,project,today};`);
+  w.eval(script+`;window.gameTest={get state(){return S},get session(){return sess},get mode(){return mode},get region(){return curRegion},C,members,recommended,regionStats,startSession,startChallenge,startTeam,startRun,onPick,skip,grade,goHome,startExplore,showInfo,restore,project,today};`);
   const api=w.gameTest;
   api.state.sound=false;
   return{w,api,el:id=>w.document.getElementById(id)};
@@ -36,7 +36,7 @@ test('all seven regions are available on the home screen',t=>{
   const {w,el}=game(t);
   assert.equal(w.document.querySelectorAll('.rcard').length,7);
   assert.equal(el('home').hidden,false);
-  assert.match(el('regionHint').textContent,/7 regions/);
+  assert.match(el('regionHint').textContent,/choose a region/);
 });
 
 test('invalid saved fields recover without losing valid country progress',t=>{
@@ -174,4 +174,40 @@ test('a completed challenge saves its first score and replays leave it intact',t
   assert.equal(api.session.replay,true);
   while(api.session){api.skip();api.skip()}
   assert.equal(JSON.stringify(api.state.chal),result);
+});
+
+test('map runs keep their three-try rules and wait for Next after a correct answer',t=>{
+  const {api,el}=game(t);
+  api.startRun('samerica');
+  const id=api.session.queue[0].id,wrong=api.session.items.find(other=>other!==id);
+  api.onPick(wrong,null);
+  assert.equal(api.session.phase,'ask');
+  assert.equal(api.session.att[id],1);
+  assert.equal(api.session.res[id],undefined);
+  api.onPick(id,null);
+  assert.equal(api.session.mark[id],'r2');
+  assert.equal(api.session.phase,'feedback');
+  el('showme').click();
+  assert.equal(api.session.pos,1);
+});
+
+test('a full map run saves and restores its best result',t=>{
+  const {api}=game(t);
+  api.startRun('samerica');
+  while(api.session){api.onPick(api.session.queue[api.session.pos].id,null);api.skip()}
+  assert.equal(api.state.best.samerica.pct,100);
+  const restored=api.restore(JSON.stringify(api.state));
+  assert.equal(restored.best.samerica.pct,100);
+  assert.equal(restored.best.samerica.ms,api.state.best.samerica.ms);
+});
+
+test('skipping a map run reveal records the missed country before advancing',t=>{
+  const {api}=game(t);
+  api.startRun('samerica');
+  const id=api.session.queue[0].id;
+  api.skip();
+  assert.equal(api.session.phase,'reveal');
+  api.skip();
+  assert.equal(api.session.mark[id],'rx');
+  assert.equal(api.session.pos,1);
 });

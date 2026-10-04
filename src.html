@@ -24,7 +24,7 @@
   --accent-soft:#f6dbe9;
   --ok:#1f8a4f;
   --bad:#d4401f;
-  --ta:#2f6fde;--tb:#e09a0b;
+  --ta:#2f6fde;--tb:#e09a0b;--r2:#e3b30c;--r3:#ec7a24;
   --t0:#e8cf8f;--t1:#b3d29b;--t2:#ecb3aa;--t3:#c4bbe6;--t4:#9bcfca;
   --shadow:0 1px 2px #16242a12,0 10px 30px #16242a1c;
   --f-ui:"Schibsted Grotesk","Helvetica Neue",Arial,sans-serif;
@@ -33,12 +33,12 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --paper:#0f181b;--ocean:#0b1c23;--water-ink:#5d8a99;--grat:#14303a;--land:#283337;--hatch:#35444a;--land-out:#18252a;--edge:#0b1c23;
   --ink:#e8eeec;--muted:#93a4a8;--rule:#24353b;--raise:#16232a;--accent:#ff58b4;--accent-ink:#22050f;--accent-soft:#4a1832;
-  --ok:#4ccb80;--bad:#ff6d50;--ta:#5e95ff;--tb:#f2b52c;--t0:#94793c;--t1:#557f46;--t2:#97554d;--t3:#625a96;--t4:#3b8079;
+  --ok:#4ccb80;--bad:#ff6d50;--ta:#5e95ff;--tb:#f2b52c;--r2:#f0c53e;--r3:#ff9a4a;--t0:#94793c;--t1:#557f46;--t2:#97554d;--t3:#625a96;--t4:#3b8079;
   --shadow:0 1px 2px #0007,0 12px 32px #0009;color-scheme:dark}}
 :root[data-theme="dark"]{
   --paper:#0f181b;--ocean:#0b1c23;--water-ink:#5d8a99;--grat:#14303a;--land:#283337;--hatch:#35444a;--land-out:#18252a;--edge:#0b1c23;
   --ink:#e8eeec;--muted:#93a4a8;--rule:#24353b;--raise:#16232a;--accent:#ff58b4;--accent-ink:#22050f;--accent-soft:#4a1832;
-  --ok:#4ccb80;--bad:#ff6d50;--ta:#5e95ff;--tb:#f2b52c;--t0:#94793c;--t1:#557f46;--t2:#97554d;--t3:#625a96;--t4:#3b8079;
+  --ok:#4ccb80;--bad:#ff6d50;--ta:#5e95ff;--tb:#f2b52c;--r2:#f0c53e;--r3:#ff9a4a;--t0:#94793c;--t1:#557f46;--t2:#97554d;--t3:#625a96;--t4:#3b8079;
   --shadow:0 1px 2px #0007,0 12px 32px #0009;color-scheme:dark}
 
 [hidden]{display:none!important}
@@ -232,7 +232,24 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .vs small{font-size:13px;color:var(--muted)}
 .vs span{font-weight:750;font-size:14px}
 
+/* map run */
+.c.r1,.mk.r1{fill:var(--ok)!important}
+.c.r2,.mk.r2{fill:var(--r2)!important}
+.c.r3,.mk.r3{fill:var(--r3)!important}
+.c.rx,.mk.rx{fill:var(--bad)!important}
+.segs.track{background:var(--land-out);border-radius:3px;overflow:hidden}
+.segs .runbar{flex:none;height:100%;width:calc(var(--p) * 1%);background:var(--accent);border-radius:3px;transition:width .3s}
+.combo.timer{background:var(--land-out);color:var(--ink);font-variant-numeric:tabular-nums}
+.tally{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.tally div{display:flex;flex-direction:column;gap:2px;padding:10px;border-radius:12px;background:var(--land-out)}
+.tally b{font-size:22px;font-weight:850;line-height:1}
+.tally small{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.tally i{width:9px;height:9px;border-radius:3px;display:inline-block}
+.newbest{align-self:flex-start;background:var(--accent-soft);color:var(--accent);font-weight:800;font-size:13px;padding:4px 10px;border-radius:999px}
+
 /* summary */
+#summary.side{left:auto;right:24px;top:24px;transform:none;width:380px;max-height:calc(100% - 48px);animation:side .35s ease}
+@keyframes side{from{opacity:0;transform:translateX(16px)}}
 #setup,#summary{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,calc(100% - 32px));max-height:calc(100% - 32px);overflow-y:auto;padding:26px;display:flex;flex-direction:column;gap:20px;background:var(--raise);border:1px solid var(--rule);border-radius:20px;box-shadow:var(--shadow);z-index:4;animation:card .35s cubic-bezier(.2,.9,.3,1.2)}
 @keyframes card{from{opacity:0;transform:translate(-50%,-46%) scale(.97)}}
 #setup .kick,#summary .kick{font-size:13px;color:var(--muted);font-weight:600;margin:0}
@@ -274,6 +291,9 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
   .rcard{min-width:0}
   .rcard.active{grid-column:1/-1}
   .rmap{height:54px}
+  #summary.side{left:12px;right:12px;top:auto;bottom:12px;width:auto;max-height:52%}
+  .tabs button{padding:8px 10px;font-size:13px}
+  .c-row{flex-wrap:wrap}
   .rcard.active .rmap{height:64px}
   .rcard.active .rbody{flex-direction:row;align-items:center}
   .rcard.active .rmap{width:96px;flex-shrink:0}
@@ -315,7 +335,8 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
         <svg class="ticks" id="ticks" viewBox="0 0 591 8" preserveAspectRatio="none" aria-hidden="true"></svg>
         <div class="c-row">
           <div class="tabs" role="group" aria-label="Mode">
-            <button data-mode="find" aria-pressed="true">Quiz</button>
+            <button data-mode="find" aria-pressed="true">Learn</button>
+            <button data-mode="run" aria-pressed="false">Map run</button>
             <button data-mode="explore" aria-pressed="false">Explore</button>
           </div>
           <small id="modeNote"></small>
@@ -340,6 +361,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
     <div class="h-bottom" id="homeBottom">
       <div class="qchips">
         <button class="chip trouble" id="trouble" hidden></button>
+        <button class="chip" id="runChip"><svg viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg>Full map run</button>
         <button class="chip" id="teamBtn"><span class="dots"><i style="background:var(--ta)"></i><i style="background:var(--tb)"></i></span>Play with a friend</button>
         <button class="chip" id="chalBtn"></button>
       </div>
@@ -407,7 +429,7 @@ const SEAS=[
 
 /* storage */
 const KEY='blank-atlas.v1';
-function blank(){return{cards:{find:{}},days:[],sound:true,chal:null,goal:{date:'',n:0},conf:{}}}
+function blank(){return{cards:{find:{}},days:[],sound:true,chal:null,goal:{date:'',n:0},conf:{},best:{}}}
 let S=blank();
 function restore(raw){
   const saved=JSON.parse(raw),s=blank();
@@ -417,6 +439,7 @@ function restore(raw){
   if(saved.goal&&typeof saved.goal.date==='string'&&Number.isFinite(saved.goal.n))s.goal={date:saved.goal.date,n:Math.max(0,saved.goal.n)};
   if(saved.chal&&typeof saved.chal.date==='string'&&Array.isArray(saved.chal.res)&&Number.isFinite(saved.chal.score)&&Number.isFinite(saved.chal.ms))s.chal=saved.chal;
   if(saved.team&&REG[saved.team.region]&&[3,5,8,10].includes(saved.team.rounds))s.team=saved.team;
+  if(saved.best&&typeof saved.best==='object')for(const [region,best] of Object.entries(saved.best))if(REG[region]&&best&&Number.isFinite(best.pct)&&best.pct>=0&&best.pct<=100&&Number.isFinite(best.ms)&&best.ms>=0)s.best[region]={pct:best.pct,ms:best.ms,date:typeof best.date==='string'?best.date:''};
   if(saved.conf&&typeof saved.conf==='object')for(const [id,pairs] of Object.entries(saved.conf))if(C.has(id)&&pairs&&typeof pairs==='object')s.conf[id]=Object.fromEntries(Object.entries(pairs).filter(([other,n])=>C.has(other)&&Number.isFinite(n)&&n>0));
   for(const [id,k] of Object.entries(saved.cards?.find||{})){
     if(!C.has(id)||!k||typeof k!=='object')continue;
@@ -480,6 +503,7 @@ const $=id=>document.getElementById(id);
 function insets(){
   const mobile=innerWidth<=760;
   if(mode==='home'||mode==='summary'){
+    if(mode==='summary'&&$('summary').classList.contains('side'))return mobile?[16,8,Math.round(innerHeight*.54),8]:[24,428,24,24];
     if(mode==='summary'||$('home').hidden)return[24,24,24,24];
     const bt=$('homeBottom').getBoundingClientRect().top,H0=innerHeight;
     const top=mobile?$('home').querySelector('.cartouche').getBoundingClientRect().bottom+6:24;
@@ -520,6 +544,7 @@ function project(rid,animate){
   svg.call(zoom.transform,d3.zoomIdentity);
   paint();
   if(sess?.kind==='team')for(const [id,team] of Object.entries(sess.owner))setCls(id,team?'tb':'ta',true);
+  if(sess?.kind==='run')for(const [id,cls] of Object.entries(sess.mark))setCls(id,cls,true);
   if(animate&&!RM)svg.style('opacity',.25).transition().duration(320).style('opacity',1);
 }
 
@@ -642,8 +667,9 @@ function troubleIds(){
 const MINI={};
 function miniPaths(rid){
   if(MINI[rid])return MINI[rid];
-  const [x0,y0,x1,y1]=REG[rid].box;
-  const pj=d3.geoAzimuthalEqualArea().rotate([-(x0+x1)/2,-(y0+y1)/2]).clipAngle(100).fitExtent([[4,4],[236,84]],boxGeo(REG[rid].box));
+  let pj;
+  if(rid==='world')pj=d3.geoNaturalEarth1().rotate([-11,0]).fitExtent([[4,4],[236,84]],{type:'Sphere'});
+  else{const [x0,y0,x1,y1]=REG[rid].box;pj=d3.geoAzimuthalEqualArea().rotate([-(x0+x1)/2,-(y0+y1)/2]).clipAngle(100).fitExtent([[4,4],[236,84]],boxGeo(REG[rid].box))}
   const pth=d3.geoPath(pj);
   return MINI[rid]=members(rid).map(id=>{const f=FEAT.get(id),d=f&&pth(f);if(d)return{id,d};const p=pj(GC.get(id));return p&&isFinite(p[0])?{id,cx:p[0],cy:p[1]}:null}).filter(Boolean);
 }
@@ -669,20 +695,21 @@ function renderHome(){
   const order=DATA.countries.map(c=>peek(c.id)).map(k=>k.b>=3?2:k.c>0?1:0).sort((a,b)=>b-a);
   $('ticks').innerHTML=order.map((v,i)=>`<rect x="${i*3}" y="0" width="2" height="8"${v===2?' class="ms"':v===1?' class="ch"':''}/>`).join('');
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===homeMode));
-  $('modeNote').textContent=homeMode==='explore'?'Tap a region to browse':'Tap a region to play';
-  $('regionHint').textContent=innerWidth<=760?'Scroll for all 7 regions':'Scroll sideways for all 7 regions';
-  const due=dueIds(),rec=recommended(),regs=[rec,...REGIONS.filter(r=>r!==rec)];
+  $('modeNote').textContent=homeMode==='explore'?'Tap a region to browse':homeMode==='run'?'Every country, one go':'Tap a region to play';
+  const due=dueIds(),rec=recommended(),regs=homeMode==='run'?[...REGIONS,{id:'world',name:'Whole world'}]:[rec,...REGIONS.filter(r=>r!==rec)];
+  $('regionHint').textContent=innerWidth<=760?'Scroll to choose a region':'Scroll sideways to choose a region';
   const box=$('regions');box.innerHTML='';
   for(const r of regs){
     const s=regionStats(r.id),active=r===rec&&homeMode==='find';
     const card=document.createElement('div');card.className='rcard'+(active?' active':'');
-    const line=s.charted===0?`${s.total} countries`:s.mast===s.total?'All mastered':`${s.charted} of ${s.total} charted`;
-    const badge=homeMode==='find'?(s.due?`<span class="rbadge">${s.due} to review</span>`:s.mast===s.total?`<span class="rbadge done">Done</span>`:''):'';
+    const best=S.best[r.id];
+    const line=homeMode==='run'?(best?`${s.total} countries, best ${fmtTime(best.ms)}`:`${s.total} countries`):s.charted===0?`${s.total} countries`:s.mast===s.total?'All mastered':`${s.charted} of ${s.total} charted`;
+    const badge=homeMode==='run'?(best?`<span class="rbadge${best.pct===100?' done':''}">Best ${best.pct}%</span>`:''):homeMode==='find'?(s.due?`<span class="rbadge">${s.due} to review</span>`:s.mast===s.total?`<span class="rbadge done">Done</span>`:''):'';
     card.innerHTML=`<button class="rbody">${miniMap(r.id)}<span class="rinfo"><span><b></b><small>${line}</small></span>${badge}</span></button>`;
     card.querySelector('b').textContent=r.name;
     const body=card.querySelector('.rbody');
     body.setAttribute('aria-label',`${r.name}: ${line}`);
-    body.onclick=()=>homeMode==='explore'?startExplore(r.id):startSession({kind:'learn',region:r.id});
+    body.onclick=()=>homeMode==='explore'?startExplore(r.id):homeMode==='run'?startRun(r.id):startSession({kind:'learn',region:r.id});
     card.onmouseenter=()=>hlRegion(r.id);card.onmouseleave=()=>hlRegion(null);
     body.onfocus=()=>hlRegion(r.id);body.onblur=()=>hlRegion(null);
     if(active){
@@ -713,6 +740,8 @@ function renderHome(){
   ch.title=played?`Today: ${S.chal.score} of 10 in ${fmtTime(S.chal.ms)}. Play again for practice.`:'10 countries anywhere. Same ones for everyone today.';
   ch.onclick=startChallenge;
   $('teamBtn').onclick=openTeamSetup;
+  $('runChip').hidden=homeMode==='run';
+  $('runChip').onclick=()=>{homeMode='run';renderHome()};
   $('soundBtn').innerHTML=`<span>Sound</span><span>${S.sound?'On':'Off'}</span>`;
 }
 function hlRegion(rid){const set=rid?new Set(members(rid)):null;for(const c of DATA.countries)setCls(c.id,'hlr',!!set&&set.has(c.id))}
@@ -735,6 +764,8 @@ function show(m){
   mode=m;
   $('home').hidden=m!=='home';
   closeMenu();
+  $('summary').classList.remove('side');
+  $('combo').className='combo';
   $('bar').hidden=!(m==='play'||m==='explore');
   $('ctrls').hidden=!(m==='play'||m==='explore');
   $('summary').hidden=m!=='summary';
@@ -750,7 +781,7 @@ function show(m){
   document.querySelectorAll('.hlr').forEach(e=>e.classList.remove('hlr'));
   svg.classed('quiz',m==='play').classed('home',m==='home'||m==='summary'||m==='setup');
 }
-function goHome(){document.querySelectorAll('.ta,.tb').forEach(e=>e.classList.remove('ta','tb'));sess=null;clearFx();setLabels([]);clearTransient();show('home');renderHome();project('world',true)}
+function goHome(){document.querySelectorAll('.ta,.tb,.r1,.r2,.r3,.rx').forEach(e=>e.classList.remove('ta','tb','r1','r2','r3','rx'));$('summary').classList.remove('side');sess=null;clearFx();setLabels([]);clearTransient();show('home');renderHome();project('world',true)}
 
 /* sessions */
 function shuffle(a,rnd=Math.random){for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -855,6 +886,85 @@ function teamFinish(){
   if(a!==b)tone([523,659,784,1047],.08);
   $('rematch').focus({preventScroll:true});
 }
+function startRun(rid){
+  document.querySelectorAll('.r1,.r2,.r3,.rx,.ta,.tb').forEach(e=>e.classList.remove('r1','r2','r3','rx','ta','tb'));
+  const ids=shuffle(members(rid));
+  sess={kind:'run',region:rid,queue:ids.map(id=>({id})),items:[...ids],pos:0,res:{},retries:{},before:{},phase:'ask',t0:Date.now(),combo:0,best:0,taught:[],att:{},mark:{}};
+  for(const id of ids)sess.before[id]=peek(id).b;
+  show('play');ask(true);runTick(sess);
+}
+function runTick(s){
+  if(sess!==s||s.kind!=='run'||mode!=='play')return;
+  const el=$('combo');el.hidden=false;el.className='combo timer';el.textContent=fmtTime(Date.now()-s.t0);
+  setTimeout(()=>runTick(s),500);
+}
+function runMark(id,cls){sess.mark[id]=cls;for(const e of els.get(id)||[]){e.classList.remove('r1','r2','r3','rx');e.classList.add(cls)}}
+function runReveal(t,msg){
+  grade(t,false);sess.phase='reveal';sBad();
+  setCls(t,'reveal',true);fxLabel(t,C.get(t).name,'t');
+  ensureVisible([t],markers.some(m=>m.id===t)?70:0);
+  $('pMsg').innerHTML=msg;$('showme').innerHTML='Skip <kbd>Space</kbd>';renderSegs();
+}
+function runPick(id,pt){
+  const t=step().id;
+  if(sess.phase==='reveal'){
+    if(id===t){setCls(t,'reveal',false);runMark(t,'rx');ripple(pt);advance()}else{shake(id);sBad()}
+    return;
+  }
+  if(sess.phase!=='ask')return;
+  const a=(sess.att[t]||0)+1;
+  if(id===t){
+    grade(t,a===1);runMark(t,'r'+a);ripple(pt);sOk(a===1?sess.combo:0);
+    clearFx();fxLabel(t,C.get(t).name,'rise');
+    $('pMsg').innerHTML=a===1?`<span class="ok">Correct.</span>`:`<span class="ok">Got it</span> on try ${a}.`;
+    renderSegs();advance();
+    return;
+  }
+  sess.att[t]=a;shake(id);ripple(pt,true);
+  document.querySelectorAll('.bad').forEach(e=>e.classList.remove('bad'));
+  if(!sess.mark[id])setCls(id,'bad',true);
+  clearFx();fxLabel(id,nameOf(id));
+  const near=C.has(id)&&C.get(t).nb.includes(id);
+  if(a>=3)runReveal(t,`<span class="bad">That's ${esc(nameOf(id))}.</span> Out of tries. Tap <b>${esc(C.get(t).name)}</b> to continue.`);
+  else{sBad();$('pMsg').innerHTML=`<span class="bad">That's ${esc(nameOf(id))}${near?', right next door':''}.</span> ${3-a} ${3-a===1?'try':'tries'} left.`}
+}
+function runFinish(){
+  const s=sess;sess=null;
+  clearTransient();clearFx();setLabels([]);
+  const ms=Date.now()-s.t0,ids=s.items.filter(id=>s.mark[id]);
+  const n={r1:0,r2:0,r3:0,rx:0};for(const id of ids)n[s.mark[id]]++;
+  const total=s.items.length,complete=ids.length===total;
+  const pct=Math.round(n.r1/total*100);
+  let isBest=false,hadPrev=!!S.best[s.region];
+  if(complete){const prev=S.best[s.region];if(!prev||pct>prev.pct||(pct===prev.pct&&ms<prev.ms)){S.best[s.region]={pct,ms,date:today()};isBest=true}}
+  if(ids.length&&!S.days.includes(today())){S.days.push(today());S.days=S.days.slice(-400)}
+  save();
+  show('summary');
+  $('summary').classList.add('side');
+  project(s.region,true);
+  for(const [id,cls] of Object.entries(s.mark))setCls(id,cls,true);
+  const name=s.region==='world'?'the whole world':REG[s.region].name;
+  const missed=ids.filter(id=>s.mark[id]!=='r1');
+  $('summary').innerHTML=`
+    <div><p class="kick">Map run: ${esc(name)}${complete?'':', stopped early'}</p><h2>${pct}% right first try</h2></div>
+    ${isBest?`<span class="newbest">${hadPrev?'New best':'First full run saved'}</span>`:complete&&S.best[s.region]?`<p class="kick" style="margin:0">Your best: ${S.best[s.region].pct}% in ${fmtTime(S.best[s.region].ms)}</p>`:''}
+    <div class="tally">
+      <div><b>${n.r1}</b><small><i style="background:var(--ok)"></i>first try</small></div>
+      <div><b>${n.r2}</b><small><i style="background:var(--r2)"></i>second</small></div>
+      <div><b>${n.r3}</b><small><i style="background:var(--r3)"></i>third</small></div>
+      <div><b>${n.rx}</b><small><i style="background:var(--bad)"></i>missed</small></div>
+    </div>
+    <div class="facts" style="grid-template-columns:repeat(2,1fr)">
+      <div><b>${fmtTime(ms)}</b><small>time</small></div>
+      <div><b>${ids.length}/${total}</b><small>countries placed</small></div>
+    </div>
+    ${missed.length?`<div class="newly"><p>Worth another look</p><div class="flags">${missed.slice(0,24).map(id=>`<span>${C.get(id).flag} ${esc(C.get(id).name)}</span>`).join('')}${missed.length>24?`<span>and ${missed.length-24} more</span>`:''}</div></div>`:''}
+    <div class="row"><button class="btn primary" id="againBtn">Run it again</button><button class="btn" id="doneBtn">Done</button></div>`;
+  $('againBtn').onclick=()=>{$('summary').classList.remove('side');startRun(s.region)};
+  $('doneBtn').onclick=()=>{homeMode='run';goHome()};
+  if(complete&&pct>=80)tone([523,659,784,1047],.08);
+  $('againBtn').focus({preventScroll:true});
+}
 function tick(s){if(sess!==s||s.kind!=='challenge'||mode!=='play')return;$('tick').textContent=fmtTime(Date.now()-s.t0);setTimeout(()=>tick(s),500)}
 const fmtTime=ms=>{const s=Math.round(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
 
@@ -862,6 +972,13 @@ function clearTransient(){for(const c of ['tgt','reveal','ok','bad','shake'])doc
 const step=()=>sess.queue[sess.pos];
 function renderSegs(){
   const cur=step();
+  $('segs').classList.toggle('track',sess.kind==='run');
+  if(sess.kind==='run'){
+    const d=Object.keys(sess.res).length;
+    $('segs').innerHTML=`<i class="runbar" style="--p:${d/sess.items.length*100}"></i>`;
+    $('tick').textContent=`${d}/${sess.items.length}`;
+    return;
+  }
   $('segs').innerHTML=sess.items.map(id=>{
     const r=sess.res[id];
     let cls=r===true?'ok':r===false?'bad':(cur&&cur.id===id&&!cur.teach?'now':'');
@@ -884,6 +1001,7 @@ function renderScore(){
   $('score').children[0].classList.toggle('on',t===0);$('score').children[1].classList.toggle('on',t===1);
 }
 function kicker(){
+  if(sess.kind==='run')return`Map run: ${REG[sess.region].name==='the world'?'whole world':REG[sess.region].name}`;
   if(sess.kind==='team')return`${TEAM[step().team]} team's turn`;
   if(sess.kind==='challenge')return`Daily challenge${sess.replay?', practice round':''}`;
   if(sess.kind==='review')return`Review in ${REG[curRegion].name}`;
@@ -923,7 +1041,7 @@ function ask(reset=false){
     sTeach();
   }else{
     const k=peek(id);
-    if(sess.kind!=='challenge'&&sess.kind!=='team'&&k.b<=1){
+    if(sess.kind!=='challenge'&&sess.kind!=='team'&&sess.kind!=='run'&&k.b<=1){
       const anchors=members(curRegion).filter(x=>x!==id&&peek(x).b>=2);
       setLabels(anchors);
     }else setLabels([]);
@@ -967,6 +1085,7 @@ function nextQuestion(){
 function onPick(id,pt){
   if(mode==='explore'){if(id)showInfo(id);else closeInfo();return}
   if(mode!=='play'||!sess||!id)return;
+  if(sess.kind==='run'){runPick(id,pt);return}
   const t=step().id;
   if(sess.phase==='teach'){
     if(id===t){sOk(0);nextQuestion()}
@@ -1027,6 +1146,12 @@ function miss(t,picked,pt){
 $('showme').onclick=()=>skip();
 function skip(){
   if(mode!=='play'||!sess)return;
+  if(sess.kind==='run'){
+    if(sess.phase==='ask')runReveal(step().id,`Here it is. Tap <b>${esc(C.get(step().id).name)}</b> or continue.`);
+    else if(sess.phase==='reveal'){setCls(step().id,'reveal',false);runMark(step().id,'rx');nextQuestion()}
+    else if(sess.phase==='feedback')nextQuestion();
+    return;
+  }
   if(sess.phase==='ask')miss(step().id,null,null);
   else if(sess.phase==='reveal'||sess.phase==='feedback'||sess.phase==='teach')nextQuestion();
 }
@@ -1042,6 +1167,7 @@ addEventListener('keydown',e=>{
 /* finish */
 function finish(){
   if(sess.kind==='team'){teamFinish();return}
+  if(sess.kind==='run'){runFinish();return}
   const s=sess;sess=null;
   clearTransient();clearFx();setLabels([]);
   const ids=s.items.filter(id=>s.res[id]!==undefined),first=ids.filter(id=>s.res[id]).length;
