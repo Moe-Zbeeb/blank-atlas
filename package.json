@@ -5,7 +5,8 @@
   "scripts": {
     "data": "node build-data.js",
     "build": "node build-site.js",
-    "preview": "npx --yes serve dist -l 4173"
+    "preview": "npx --yes serve dist -l 4173",
+    "test": "node --test tests/*.test.js"
   },
   "keywords": [],
   "author": "",
@@ -19,5 +20,8 @@
     "world-atlas": "^2.0.2",
     "world-countries": "^5.1.0"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "jsdom": "^29.1.1"
+  }
 }
