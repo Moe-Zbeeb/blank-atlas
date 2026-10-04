@@ -283,9 +283,9 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
   .goal .ring{width:24px;height:24px}
   .gear{width:44px;height:44px;padding:10px}
   .menu{width:min(280px,calc(100vw - 24px))}
-  .c-row small{max-width:100px}
-  .h-bottom{margin-top:144px}
-  .qchips{flex-wrap:wrap;overflow:visible;gap:8px}
+  .c-row small{display:none}
+  .h-bottom{margin-top:80px}
+  .qchips{order:2;flex-wrap:wrap;overflow:visible;gap:8px;margin-top:8px}
   .chip{min-height:44px;padding:9px 12px;font-size:13px;white-space:normal}
   .strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;overflow:visible;padding:0;gap:10px}
   .rcard{min-width:0}
@@ -310,7 +310,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
   .zoom button+button{border-top:0;border-left:1px solid var(--rule)}
   .pill{min-height:46px;padding:10px 14px}
   .pill kbd{display:none}
-  .region-heading span{max-width:130px;text-align:right}
+  .region-heading span{max-width:100px;text-align:right}
   .mark{font-size:28px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -506,7 +506,7 @@ function insets(){
     if(mode==='summary'&&$('summary').classList.contains('side'))return mobile?[16,8,Math.round(innerHeight*.54),8]:[24,428,24,24];
     if(mode==='summary'||$('home').hidden)return[24,24,24,24];
     const bt=$('homeBottom').getBoundingClientRect().top,H0=innerHeight;
-    const top=mobile?$('home').querySelector('.cartouche').getBoundingClientRect().bottom+6:24;
+    const top=mobile?$('home').querySelector('.h-top').getBoundingClientRect().bottom+6:24;
     return[top,mobile?8:24,Math.max(24,H0-bt+6),mobile?8:24];
   }
   const top=($('bar').hidden?0:$('bar').getBoundingClientRect().bottom)+14;
@@ -697,7 +697,7 @@ function renderHome(){
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===homeMode));
   $('modeNote').textContent=homeMode==='explore'?'Tap a region to browse':homeMode==='run'?'Every country, one go':'Tap a region to play';
   const due=dueIds(),rec=recommended(),regs=homeMode==='run'?[...REGIONS,{id:'world',name:'Whole world'}]:[rec,...REGIONS.filter(r=>r!==rec)];
-  $('regionHint').textContent=innerWidth<=760?'Scroll to choose a region':'Scroll sideways to choose a region';
+  $('regionHint').textContent=innerWidth<=760?'Scroll for more':'Scroll sideways to choose a region';
   const box=$('regions');box.innerHTML='';
   for(const r of regs){
     const s=regionStats(r.id),active=r===rec&&homeMode==='find';
