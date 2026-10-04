@@ -56,12 +56,13 @@
   --shadow:0 1px 2px #0007,0 12px 32px #0009;color-scheme:dark}
 
 [hidden]{display:none!important}
-html,body{height:100%}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%;margin:0}
 body{background:var(--paper);color:var(--ink);font:15px/1.45 var(--f-ui);overflow:hidden;-webkit-tap-highlight-color:transparent}
 .tick,.facts b,#tick{font-variant-numeric:tabular-nums}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
 button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
-#app{position:relative;height:100%;overflow:hidden}
+#app{position:relative;height:100%;height:100dvh;overflow:hidden}
 
 /* map */
 #map{position:absolute;inset:0;width:100%;height:100%;background:var(--ocean);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
@@ -109,7 +110,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .ticks rect.ms{fill:var(--ok)}
 .c-row{display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;z-index:1}
 .tabs{display:inline-flex;gap:2px;background:var(--land-out);border-radius:9px;padding:2px}
-.tabs button{padding:5px 12px;border-radius:7px;font-size:13px;font-weight:600;color:var(--muted)}
+.tabs button{min-height:44px;padding:8px 14px;border-radius:7px;font-size:13px;font-weight:600;color:var(--muted)}
 .tabs button[aria-pressed="true"]{background:var(--raise);color:var(--ink);box-shadow:0 1px 2px #0002}
 .c-row small{font-size:12px;color:var(--muted);text-align:right}
 .h-status{display:flex;gap:10px;align-items:center;position:relative}
@@ -119,7 +120,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .streak.on svg{fill:var(--accent)}
 .goal .ring{width:30px;height:30px;display:block}
 .goal div{display:flex;flex-direction:column;line-height:1.15}
-.gear{padding:8px;width:40px;height:40px;justify-content:center}
+.gear{padding:8px;width:44px;height:44px;justify-content:center}
 .gear svg{width:18px;height:18px;stroke:var(--ink);fill:none;stroke-width:1.8}
 .menu{position:absolute;right:0;top:calc(100% + 8px);width:280px;background:var(--raise);border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);padding:14px 16px;display:flex;flex-direction:column;gap:12px;font-size:13.5px;z-index:5}
 .menu .legend{display:flex;flex-direction:column;gap:6px;color:var(--muted)}
@@ -129,6 +130,9 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .menu .note{margin:0;font-size:12px;color:var(--muted)}
 .menu .danger{color:var(--bad);font-weight:700}
 .h-bottom{display:flex;flex-direction:column;gap:12px;min-width:0}
+.region-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 2px;color:var(--ink)}
+.region-heading h2{margin:0;font-size:16px}
+.region-heading span{font-size:12px;color:var(--muted)}
 .qchips{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:2px}
 .qchips::-webkit-scrollbar{display:none}
 .chip{display:flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--rule);border-radius:999px;padding:8px 15px;font-size:13.5px;font-weight:650;box-shadow:var(--shadow);white-space:nowrap;transition:transform .12s}
@@ -141,8 +145,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .chip .sq{display:flex;gap:2px}
 .chip .sq i{width:6px;height:6px;border-radius:1.5px;background:var(--ok)}
 .chip .sq i.x{background:var(--bad)}
-.strip{display:flex;gap:12px;overflow-x:auto;align-items:flex-end;padding:4px 2px 6px;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent)}
-.strip::-webkit-scrollbar{display:none}
+.strip{display:flex;gap:12px;overflow-x:auto;align-items:flex-end;padding:4px 2px 10px;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:var(--muted) transparent}
 .strip.end{-webkit-mask-image:none;mask-image:none}
 .rcard{flex:0 0 214px;scroll-snap-align:start;background:var(--paper);border:1px solid var(--rule);border-radius:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;transition:transform .14s,border-color .14s}
 .rcard:hover{transform:translateY(-2px)}
@@ -172,7 +175,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .segs i.bad{background:var(--bad)}
 .segs i.now{background:color-mix(in oklab,var(--accent) 45%,var(--land-out))}
 .tick{font-size:13px;color:var(--muted);font-weight:600;min-width:2.6em;text-align:right}
-#quit{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;color:var(--muted);margin-right:-6px}
+#quit{min-width:44px;min-height:44px;padding:0 8px;border-radius:8px;display:grid;place-items:center;color:var(--muted);margin-left:auto;font-size:13px;font-weight:700}
 #quit:hover{background:var(--land-out);color:var(--ink)}
 #quit svg{width:14px;height:14px;stroke:currentColor;stroke-width:2.2}
 .q{display:flex;align-items:center;gap:12px;min-width:0}
@@ -192,7 +195,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 #ctrls{position:absolute;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none;z-index:3}
 #ctrls>*{pointer-events:auto}
 .zoom{display:flex;flex-direction:column;background:var(--raise);border:1px solid var(--rule);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
-.zoom button{width:40px;height:40px;display:grid;place-items:center}
+.zoom button{width:44px;height:44px;display:grid;place-items:center}
 .zoom button+button{border-top:1px solid var(--rule)}
 .zoom button:hover{background:var(--land-out)}
 .zoom svg{width:16px;height:16px;stroke:var(--ink);stroke-width:2;fill:none}
@@ -201,14 +204,16 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .pill kbd{font:600 11px/1 var(--f-ui);padding:3px 6px;border-radius:5px;background:var(--land-out);color:var(--muted)}
 @media (pointer:coarse){.pill kbd{display:none}}
 
-#info{position:absolute;right:16px;bottom:calc(72px + env(safe-area-inset-bottom,0px));width:min(320px,calc(100% - 32px));padding:18px;display:flex;flex-direction:column;gap:12px;background:var(--raise);border:1px solid var(--rule);border-radius:16px;box-shadow:var(--shadow);z-index:3}
+#info{position:absolute;right:16px;bottom:calc(80px + env(safe-area-inset-bottom,0px));width:min(340px,calc(100% - 32px));max-height:min(50dvh,380px);overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;background:var(--raise);border:1px solid var(--rule);border-radius:16px;box-shadow:var(--shadow);z-index:3}
+.info-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.info-close{min-height:44px;padding:0 8px;color:var(--muted);font-size:13px;font-weight:700;flex-shrink:0}
 #info h2{margin:0;font-size:24px;font-weight:850;letter-spacing:-.01em;display:flex;gap:10px;align-items:center;line-height:1.1}
 #info dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px}
 #info dt{color:var(--muted)}
 #info dd{margin:0;font-weight:600}
 #info .sub{font-size:13px;color:var(--muted);margin:0 0 6px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
-.chips button{font-size:13px;padding:5px 10px;border-radius:999px;background:var(--land-out)}
+.chips button{min-height:44px;font-size:13px;padding:8px 12px;border-radius:999px;background:var(--land-out)}
 .chips button:hover{background:var(--accent-soft);color:var(--accent)}
 
 /* teams */
@@ -280,31 +285,46 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .share{font-size:14px;line-height:1.5;white-space:pre-wrap;background:var(--land-out);padding:12px 14px;border-radius:10px;user-select:all;-webkit-user-select:all}
 
 @media (max-width:760px){
-  #home{padding:12px 12px calc(12px + env(safe-area-inset-bottom,0px))}
+  #home{display:block;overflow-y:auto;pointer-events:auto;padding:12px 12px calc(24px + env(safe-area-inset-bottom,0px))}
   .h-top{flex-direction:column;gap:8px}
   .cartouche{width:100%;box-sizing:border-box;padding:13px 16px 12px}
   .mark{font-size:25px}
-  .h-status{position:absolute;right:12px;bottom:12px;gap:6px}
+  .h-status{width:100%;justify-content:flex-end;gap:8px}
   .pillbox{padding:4px 10px 4px 6px;font-size:13px;box-shadow:none}
-  .pillbox small,.goal div{display:none}
-  .goal{padding:4px}
+  .goal div{font-size:12px}
+  .goal small{display:none}
+  .goal{padding:4px 8px}
   .goal .ring{width:24px;height:24px}
-  .gear{width:32px;height:32px;padding:6px}
-  .c-row small{display:none}
+  .gear{width:44px;height:44px;padding:10px}
+  .menu{width:min(280px,calc(100vw - 24px))}
+  .c-row small{max-width:100px}
+  .h-bottom{margin-top:144px}
+  .qchips{flex-wrap:wrap;overflow:visible;gap:8px}
+  .chip{min-height:44px;padding:9px 12px;font-size:13px;white-space:normal}
+  .strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;overflow:visible;padding:0;gap:10px}
+  .rcard{min-width:0}
+  .rcard.active{grid-column:1/-1}
+  .rmap{height:54px}
   #summary.side{left:12px;right:12px;top:auto;bottom:12px;width:auto;max-height:52%}
-  .tabs button{padding:5px 9px;font-size:12.5px}
-  .rcard{flex-basis:180px}
-  .rcard.active{flex-basis:236px}
-  .rmap{height:60px}
+  .tabs button{padding:8px 10px;font-size:13px}
+  .c-row{flex-wrap:wrap}
   .rcard.active .rmap{height:64px}
-  .rbody{gap:8px;padding:10px}
+  .rcard.active .rbody{flex-direction:row;align-items:center}
+  .rcard.active .rmap{width:96px;flex-shrink:0}
+  .rbody{height:100%;gap:8px;padding:10px}
+  .rinfo{flex-wrap:wrap;align-items:flex-start}
+  .rinfo b{font-size:14px}
   .cta{margin:0 10px 10px;padding:10px 12px}
-  .cta small{display:none}
-  .qchips{gap:8px}
-  .chip{padding:7px 12px;font-size:13px}
   #bar{top:calc(10px + env(safe-area-inset-top,0px));padding:10px 14px 12px}
+  .q{flex-wrap:wrap;gap:8px}
+  .score{width:100%;justify-content:flex-end}
   #info{left:16px;right:16px;width:auto}
-  .zoom{display:none}
+  .zoom{flex-direction:row}
+  .zoom button{width:40px}
+  .zoom button+button{border-top:0;border-left:1px solid var(--rule)}
+  .pill{min-height:46px;padding:10px 14px}
+  .pill kbd{display:none}
+  .region-heading span{max-width:130px;text-align:right}
   .mark{font-size:28px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -344,7 +364,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
         <div class="menu" id="menu" hidden>
           <div class="legend">
             <span><svg viewBox="0 0 16 16"><rect width="16" height="16" fill="url(#hatch)"></rect></svg>Uncharted: not learned yet</span>
-            <span><svg viewBox="0 0 16 16"><rect width="16" height="16" style="fill:color-mix(in oklab,var(--t1) 45%,var(--land))"></rect></svg>Charted: answered at least once</span>
+            <span><svg viewBox="0 0 16 16"><rect width="16" height="16" style="fill:color-mix(in oklab,var(--t1) 45%,var(--land))"></rect></svg>Charted: answered correctly at least once</span>
             <span><svg viewBox="0 0 16 16"><rect width="16" height="16" style="fill:var(--t1)"></rect></svg>Mastered: right across several days</span>
           </div>
           <button class="opt" id="soundBtn"></button>
@@ -360,6 +380,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
         <button class="chip" id="teamBtn"><span class="dots"><i style="background:var(--ta)"></i><i style="background:var(--tb)"></i></span>Play with a friend</button>
         <button class="chip" id="chalBtn"></button>
       </div>
+      <div class="region-heading"><h2>Choose a region</h2><span id="regionHint"></span></div>
       <div class="strip" id="regions"></div>
     </div>
   </section>
@@ -368,7 +389,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
     <div class="bar-top">
       <div class="segs" id="segs"></div>
       <span class="tick" id="tick"></span>
-      <button id="quit" aria-label="End session"><svg viewBox="0 0 14 14"><path d="M2 2l10 10M12 2L2 12"/></svg></button>
+      <button id="quit" aria-label="End session">End</button>
     </div>
     <div class="q">
       <span class="flag" id="pFlag"></span>
@@ -425,7 +446,27 @@ const SEAS=[
 const KEY='blank-atlas.v1';
 function blank(){return{cards:{find:{}},days:[],sound:true,chal:null,goal:{date:'',n:0},conf:{},best:{}}}
 let S=blank();
-try{const raw=localStorage.getItem(KEY);if(raw){S=Object.assign(blank(),JSON.parse(raw));S.best=S.best||{};S.cards=Object.assign({find:{}},S.cards)}}catch(e){}
+function restore(raw){
+  const saved=JSON.parse(raw),s=blank();
+  if(!saved||typeof saved!=='object')return s;
+  s.sound=typeof saved.sound==='boolean'?saved.sound:true;
+  s.days=Array.isArray(saved.days)?saved.days.filter(d=>typeof d==='string'):[];
+  if(saved.goal&&typeof saved.goal.date==='string'&&Number.isFinite(saved.goal.n))s.goal={date:saved.goal.date,n:Math.max(0,saved.goal.n)};
+  if(saved.chal&&typeof saved.chal.date==='string'&&Array.isArray(saved.chal.res)&&Number.isFinite(saved.chal.score)&&Number.isFinite(saved.chal.ms))s.chal=saved.chal;
+  if(saved.team&&REG[saved.team.region]&&[3,5,8,10].includes(saved.team.rounds))s.team=saved.team;
+  if(saved.best&&typeof saved.best==='object')for(const [region,best] of Object.entries(saved.best))if(REG[region]&&best&&Number.isFinite(best.pct)&&best.pct>=0&&best.pct<=100&&Number.isFinite(best.ms)&&best.ms>=0)s.best[region]={pct:best.pct,ms:best.ms,date:typeof best.date==='string'?best.date:''};
+  if(saved.conf&&typeof saved.conf==='object')for(const [id,pairs] of Object.entries(saved.conf))if(C.has(id)&&pairs&&typeof pairs==='object')s.conf[id]=Object.fromEntries(Object.entries(pairs).filter(([other,n])=>C.has(other)&&Number.isFinite(n)&&n>0));
+  for(const [id,k] of Object.entries(saved.cards?.find||{})){
+    if(!C.has(id)||!k||typeof k!=='object')continue;
+    const next={};
+    for(const key of ['b','due','n','c','w'])next[key]=Number.isFinite(k[key])?Math.max(0,k[key]):0;
+    next.b=Math.min(6,Math.floor(next.b));
+    if(typeof k.lastDay==='string')next.lastDay=k.lastDay;
+    s.cards.find[id]=next;
+  }
+  return s;
+}
+try{const raw=localStorage.getItem(KEY);if(raw)S=restore(raw)}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 const card=id=>S.cards.find[id]||(S.cards.find[id]={b:0,due:0,n:0,c:0,w:0});
 const peek=id=>S.cards.find[id]||{b:0,due:0,n:0,c:0,w:0};
@@ -466,7 +507,7 @@ const color={};
   const st=document.createElement('style');st.textContent=css;document.head.appendChild(st)}
 
 const svg=d3.select('#map'),zg=d3.select('#zg'),hatch=document.getElementById('hatch');
-let W=0,H=0,proj,path,curRegion=null,T=d3.zoomIdentity,markers=[];
+let W=0,H=0,proj,path,curRegion=null,T=d3.zoomIdentity,markers=[],cameraTop=0;
 const els=new Map();
 const landSel=d3.select('#lands').selectAll('path').data(features,d=>d.id).join('path')
   .attr('class',d=>'c'+(C.has(d.id)?' tc'+color[d.id]:'')).attr('data-id',d=>d.id);
@@ -493,6 +534,7 @@ function project(rid,animate){
   const rect=svg.node().getBoundingClientRect();
   curRegion=rid;W=rect.width||innerWidth||1024;H=rect.height||innerHeight||768;
   const [t,r,b,l]=insets();
+  cameraTop=t;
   const ext=[[l,t],[Math.max(l+60,W-r),Math.max(t+60,H-b)]];
   if(rid==='world')proj=d3.geoNaturalEarth1().rotate([-11,0]).fitExtent(ext,{type:'Sphere'});
   else{const [x0,y0,x1,y1]=REG[rid].box;proj=d3.geoAzimuthalEqualArea().rotate([-(x0+x1)/2,-(y0+y1)/2]).clipAngle(100).fitExtent(ext,boxGeo(REG[rid].box))}
@@ -516,6 +558,8 @@ function project(rid,animate){
   zoom.translateExtent([[-W*.6,-H*.6],[W*1.6,H*1.6]]);
   svg.call(zoom.transform,d3.zoomIdentity);
   paint();
+  if(sess?.kind==='team')for(const [id,team] of Object.entries(sess.owner))setCls(id,team?'tb':'ta',true);
+  if(sess?.kind==='run')for(const [id,cls] of Object.entries(sess.mark))setCls(id,cls,true);
   if(animate&&!RM)svg.style('opacity',.25).transition().duration(320).style('opacity',1);
 }
 
@@ -628,7 +672,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 /* home */
 function regionStats(rid){
   const ids=members(rid),now=Date.now();let mast=0,charted=0,due=0;
-  for(const id of ids){const c=peek(id);if(c.b>=3)mast++;if(c.n>0)charted++;if(c.n>0&&c.due<=now)due++}
+  for(const id of ids){const c=peek(id);if(c.b>=3)mast++;if(c.c>0)charted++;if(c.n>0&&c.due<=now)due++}
   return{total:ids.length,mast,charted,due};
 }
 function dueIds(){const now=Date.now();return Object.keys(S.cards.find).filter(id=>{const c=S.cards.find[id];return c.n>0&&c.due<=now&&C.has(id)}).sort((a,b)=>S.cards.find[a].due-S.cards.find[b].due)}
@@ -653,7 +697,7 @@ function miniMap(rid){
 function recommended(){
   const due=dueIds();
   if(due.length){const cnt={};for(const id of due)cnt[C.get(id).r]=(cnt[C.get(id).r]||0)+1;return REGIONS.slice().sort((a,b)=>(cnt[b.id]||0)-(cnt[a.id]||0))[0]}
-  return REGIONS.find(r=>{const s=regionStats(r.id);return s.charted>0&&s.charted<s.total})||REGIONS.find(r=>regionStats(r.id).charted<r.total)||REGIONS.find(r=>regionStats(r.id).mast<r.total)||REGIONS[0];
+  return REGIONS.find(r=>{const s=regionStats(r.id);return s.charted>0&&s.charted<s.total})||REGIONS.find(r=>{const s=regionStats(r.id);return s.charted<s.total})||REGIONS.find(r=>{const s=regionStats(r.id);return s.mast<s.total})||REGIONS[0];
 }
 function renderHome(){
   const st=streak(),g=goalN(),w=regionStats('world');
@@ -663,11 +707,12 @@ function renderHome(){
   $('today').innerHTML=`<span class="ring">${ring(Math.min(g,GOAL),Math.min(g,GOAL),GOAL,30,4)}</span><div><span>${Math.min(g,GOAL)} of ${GOAL}</span><small>${g>=GOAL?'goal reached':'today'}</small></div>`;
   $('today').title='Daily goal: right answers today';
   $('charted').innerHTML=w.charted?`<b>${w.charted}</b> of 197 countries charted, ${w.mast} mastered`:'197 countries waiting to be charted';
-  const order=DATA.countries.map(c=>peek(c.id)).map(k=>k.b>=3?2:k.n>0?1:0).sort((a,b)=>b-a);
+  const order=DATA.countries.map(c=>peek(c.id)).map(k=>k.b>=3?2:k.c>0?1:0).sort((a,b)=>b-a);
   $('ticks').innerHTML=order.map((v,i)=>`<rect x="${i*3}" y="0" width="2" height="8"${v===2?' class="ms"':v===1?' class="ch"':''}/>`).join('');
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===homeMode));
   $('modeNote').textContent=homeMode==='explore'?'Tap a region to browse':homeMode==='run'?'Every country, one go':'Tap a region to play';
   const due=dueIds(),rec=recommended(),regs=homeMode==='run'?[...REGIONS,{id:'world',name:'Whole world'}]:[rec,...REGIONS.filter(r=>r!==rec)];
+  $('regionHint').textContent=innerWidth<=760?'Scroll to choose a region':'Scroll sideways to choose a region';
   const box=$('regions');box.innerHTML='';
   for(const r of regs){
     const s=regionStats(r.id),active=r===rec&&homeMode==='find';
@@ -746,6 +791,8 @@ function show(m){
   $('showme').hidden=m!=='play';
   $('segs').hidden=m!=='play';
   $('combo').hidden=true;
+  $('quit').textContent=m==='explore'?'Back':'End';
+  $('quit').setAttribute('aria-label',m==='explore'?'Back to regions':'End session');
   document.querySelectorAll('.hlr').forEach(e=>e.classList.remove('hlr'));
   svg.classed('quiz',m==='play').classed('home',m==='home'||m==='summary'||m==='setup');
 }
@@ -800,8 +847,7 @@ function startSession(o){
   sess={...o,region,queue,items:[...new Set(queue.filter(s=>!s.teach).map(s=>s.id))],pos:0,res:{},retries:{},before:{},phase:'ask',t0:Date.now(),combo:0,best:0,taught:news};
   for(const id of sess.items)sess.before[id]=peek(id).b;
   show('play');
-  project(region,true);
-  ask();
+  ask(true);
 }
 function startChallenge(){
   const d=today();let h=2166136261;for(const ch of d)h=Math.imul(h^ch.charCodeAt(0),16777619);
@@ -809,7 +855,7 @@ function startChallenge(){
   const ids=shuffle(DATA.countries.map(c=>c.id).sort(),rnd).slice(0,10);
   const replay=!!(S.chal&&S.chal.date===d);
   sess={kind:'challenge',replay,region:'world',queue:ids.map(id=>({id})),items:[...ids],pos:0,res:{},retries:{},before:{},phase:'ask',t0:Date.now(),combo:0,best:0,taught:[]};
-  show('play');project('world',true);ask();tick();
+  show('play');ask(true);tick(sess);
 }
 function openTeamSetup(){
   const cfg=S.team||(S.team={region:'europe',rounds:5});
@@ -833,7 +879,7 @@ function startTeam(region,rounds){
   document.querySelectorAll('.ta,.tb').forEach(e=>e.classList.remove('ta','tb'));
   const ids=shuffle(members(region)).slice(0,rounds*2);
   sess={kind:'team',region,rounds,queue:ids.map((id,i)=>({id,team:i%2})),items:[...ids],pos:0,res:{},retries:{},before:{},phase:'ask',t0:Date.now(),combo:0,best:0,taught:[],score:[0,0],owner:{}};
-  show('play');project(region,true);ask();
+  show('play');ask(true);
 }
 function teamFinish(){
   const s=sess;sess=null;
@@ -860,12 +906,12 @@ function startRun(rid){
   const ids=shuffle(members(rid));
   sess={kind:'run',region:rid,queue:ids.map(id=>({id})),items:[...ids],pos:0,res:{},retries:{},before:{},phase:'ask',t0:Date.now(),combo:0,best:0,taught:[],att:{},mark:{}};
   for(const id of ids)sess.before[id]=peek(id).b;
-  show('play');project(rid,true);ask();runTick();
+  show('play');ask(true);runTick(sess);
 }
-function runTick(){
-  if(!sess||sess.kind!=='run'||mode!=='play')return;
-  const el=$('combo');el.hidden=false;el.className='combo timer';el.textContent=fmtTime(Date.now()-sess.t0);
-  setTimeout(runTick,500);
+function runTick(s){
+  if(sess!==s||s.kind!=='run'||mode!=='play')return;
+  const el=$('combo');el.hidden=false;el.className='combo timer';el.textContent=fmtTime(Date.now()-s.t0);
+  setTimeout(()=>runTick(s),500);
 }
 function runMark(id,cls){sess.mark[id]=cls;for(const e of els.get(id)||[]){e.classList.remove('r1','r2','r3','rx');e.classList.add(cls)}}
 function runReveal(t,msg){
@@ -877,7 +923,7 @@ function runReveal(t,msg){
 function runPick(id,pt){
   const t=step().id;
   if(sess.phase==='reveal'){
-    if(id===t){setCls(t,'reveal',false);runMark(t,'rx');ripple(pt);advance(260)}else{shake(id);sBad()}
+    if(id===t){setCls(t,'reveal',false);runMark(t,'rx');ripple(pt);advance()}else{shake(id);sBad()}
     return;
   }
   if(sess.phase!=='ask')return;
@@ -886,11 +932,12 @@ function runPick(id,pt){
     grade(t,a===1);runMark(t,'r'+a);ripple(pt);sOk(a===1?sess.combo:0);
     clearFx();fxLabel(t,C.get(t).name,'rise');
     $('pMsg').innerHTML=a===1?`<span class="ok">Correct.</span>`:`<span class="ok">Got it</span> on try ${a}.`;
-    renderSegs();advance(380);
+    renderSegs();advance();
     return;
   }
   sess.att[t]=a;shake(id);ripple(pt,true);
-  if(!sess.mark[id]){setCls(id,'bad',true);setTimeout(()=>setCls(id,'bad',false),700)}
+  document.querySelectorAll('.bad').forEach(e=>e.classList.remove('bad'));
+  if(!sess.mark[id])setCls(id,'bad',true);
   clearFx();fxLabel(id,nameOf(id));
   const near=C.has(id)&&C.get(t).nb.includes(id);
   if(a>=3)runReveal(t,`<span class="bad">That's ${esc(nameOf(id))}.</span> Out of tries. Tap <b>${esc(C.get(t).name)}</b> to continue.`);
@@ -910,6 +957,7 @@ function runFinish(){
   show('summary');
   $('summary').classList.add('side');
   project(s.region,true);
+  for(const [id,cls] of Object.entries(s.mark))setCls(id,cls,true);
   const name=s.region==='world'?'the whole world':REG[s.region].name;
   const missed=ids.filter(id=>s.mark[id]!=='r1');
   $('summary').innerHTML=`
@@ -932,7 +980,7 @@ function runFinish(){
   if(complete&&pct>=80)tone([523,659,784,1047],.08);
   $('againBtn').focus({preventScroll:true});
 }
-function tick(){if(!sess||sess.kind!=='challenge'||mode!=='play')return;$('tick').textContent=fmtTime(Date.now()-sess.t0);setTimeout(tick,500)}
+function tick(s){if(sess!==s||s.kind!=='challenge'||mode!=='play')return;$('tick').textContent=fmtTime(Date.now()-s.t0);setTimeout(()=>tick(s),500)}
 const fmtTime=ms=>{const s=Math.round(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
 
 function clearTransient(){for(const c of ['tgt','reveal','ok','bad','shake'])document.querySelectorAll('.'+c).forEach(e=>e.classList.remove(c))}
@@ -976,36 +1024,43 @@ function kicker(){
   return`Find it in ${REG[sess.region].name}`;
 }
 
-function ask(){
+function ask(reset=false){
   clearTransient();clearFx();
   const s=step(),id=s.id,c=C.get(id);
-  if((sess.kind==='review'||sess.kind==='trouble')&&curRegion!==c.r)project(c.r,true);
+  const region=sess.kind==='review'||sess.kind==='trouble'?c.r:sess.region;
   sess.phase=s.teach?'teach':'ask';
   $('pFlag').textContent=c.flag;
   $('pName').textContent=c.name;
   $('pMsg').innerHTML='';
   const kk=$('pKick');
+  $('showme').hidden=false;
   if(s.teach){
     kk.textContent='New country';kk.className='kicker new';
+    $('pMsg').innerHTML=`This is <b>${esc(c.name)}</b>. Study its location, then continue.`;
+    $('showme').innerHTML='Continue <kbd>Space</kbd>';
+  }else{
+    kk.textContent=sess.kind==='review'?`Review in ${REG[region].name}`:sess.kind==='trouble'?`Trouble spot in ${REG[region].name}`:kicker();
+    kk.className='kicker'+(sess.kind==='team'?(s.team?' kb':' ka'):'');
+    if(sess.kind==='team'){$('bar').classList.toggle('turn-a',s.team===0);$('bar').classList.toggle('turn-b',s.team===1)}
+    $('showme').innerHTML='Show me <kbd>Space</kbd>';
+    $('pMsg').textContent='Tap the country on the map. Drag to move; use + and − to zoom.';
+  }
+  renderSegs();
+  if(reset||curRegion!==region||Math.abs(cameraTop-insets()[0])>1)project(region,true);
+  if(s.teach){
     setCls(id,'tgt',true);
     const nbs=c.nb.filter(n=>members(curRegion).includes(n));
     setLabels(nbs);
     ensureVisible([id,...nbs.slice(0,6)],24);
     fxLabel(id,c.name,'t');
-    $('pMsg').innerHTML=`This is <b>${esc(c.name)}</b>. Tap it to add it to your map.`;
-    $('showme').hidden=true;
     sTeach();
   }else{
-    kk.textContent=kicker();kk.className='kicker'+(sess.kind==='team'?(step().team?' kb':' ka'):'');
-    if(sess.kind==='team'){$('bar').classList.toggle('turn-a',step().team===0);$('bar').classList.toggle('turn-b',step().team===1)}
-    $('showme').hidden=false;$('showme').innerHTML='Show me <kbd>Space</kbd>';
     const k=peek(id);
     if(sess.kind!=='challenge'&&sess.kind!=='team'&&sess.kind!=='run'&&k.b<=1){
       const anchors=members(curRegion).filter(x=>x!==id&&peek(x).b>=2);
       setLabels(anchors);
     }else setLabels([]);
   }
-  renderSegs();
 }
 
 function grade(id,correct){
@@ -1015,7 +1070,7 @@ function grade(id,correct){
   if(correct){bumpGoal();sess.combo++;sess.best=Math.max(sess.best,sess.combo)}else sess.combo=0;
   if(sess.kind!=='challenge'){
     const k=card(id),now=Date.now();k.n++;
-    if(correct){k.c++;k.b=Math.min(6,k.b+1);k.due=now+INT[k.b]}
+    if(correct){k.c++;if(k.b===0||k.lastDay!==today()){k.b=Math.min(6,k.b+1);k.lastDay=today()}k.due=now+INT[k.b]}
     else{k.w++;k.b=k.b>=3?1:0;k.due=now}
     paint();
   }
@@ -1031,18 +1086,24 @@ function requeue(id){
   sess.retries[id]=(sess.retries[id]||0)+1;
   if(sess.retries[id]<=2)insertLater(id,3);
 }
-function advance(delay){
-  sess.phase='wait';
-  setTimeout(()=>{if(!sess)return;sess.pos++;if(sess.pos>=sess.queue.length)finish();else ask()},RM?150:delay);
+function advance(){
+  sess.phase='feedback';
+  $('showme').hidden=false;
+  $('showme').innerHTML=(sess.pos+1>=sess.queue.length?'See results':'Next country')+' <kbd>Space</kbd>';
+}
+function nextQuestion(){
+  if(!sess||mode!=='play')return;
+  sess.pos++;
+  if(sess.pos>=sess.queue.length)finish();else ask();
 }
 
 function onPick(id,pt){
-  if(mode==='explore'){if(id)showInfo(id);return}
+  if(mode==='explore'){if(id)showInfo(id);else closeInfo();return}
   if(mode!=='play'||!sess||!id)return;
   if(sess.kind==='run'){runPick(id,pt);return}
   const t=step().id;
   if(sess.phase==='teach'){
-    if(id===t){setCls(t,'tgt',false);setCls(t,'ok',true);ripple(pt);sOk(0);$('pMsg').innerHTML=`<span class="ok">Added.</span> You'll be asked about ${esc(C.get(t).name)} again in a moment.`;advance(650)}
+    if(id===t){sOk(0);nextQuestion()}
     else{shake(id);$('pMsg').innerHTML=`That's ${esc(nameOf(id))}. <b>${esc(C.get(t).name)}</b> is the highlighted one.`}
     return;
   }
@@ -1053,7 +1114,7 @@ function onPick(id,pt){
       setCls(t,tm?'tb':'ta',true);ripple(pt);sOk(2);
       clearFx();fxLabel(t,C.get(t).name,'rise');
       $('pMsg').innerHTML=`<span class="ok">+3 for ${TEAM[tm]}.</span> ${esc(C.get(t).name)} is claimed.`;
-      renderSegs();advance(900);
+      renderSegs();advance();
       return;
     }
     if(id===t){
@@ -1064,10 +1125,10 @@ function onPick(id,pt){
       const k=peek(t);
       $('pMsg').innerHTML=first&&sess.kind!=='challenge'&&k.b===3?`<span class="ok">Mastered.</span> ${esc(C.get(t).name)} is now fully charted.`:`<span class="ok">${['Correct.','Right.','Yes.','Nice.'][Math.floor(Math.random()*4)]}</span>`;
       renderCombo(true);renderSegs();
-      advance(560);
+      advance();
     }else miss(t,id,pt);
   }else if(sess.phase==='reveal'){
-    if(id===t){setCls(t,'reveal',false);setCls(t,'ok',true);ripple(pt);sOk(0);advance(380)}
+    if(id===t){setCls(t,'reveal',false);setCls(t,'ok',true);ripple(pt);sOk(0);advance()}
     else{shake(id);sBad()}
   }
 }
@@ -1078,7 +1139,6 @@ function miss(t,picked,pt){
   const tn=esc(C.get(t).name);
   if(picked){
     shake(picked);setCls(picked,'bad',true);fxLabel(picked,nameOf(picked));
-    setTimeout(()=>setCls(picked,'bad',false),900);
     const pn=esc(nameOf(picked));
     let line;
     const near=C.has(picked)&&C.get(t).nb.includes(picked);
@@ -1089,6 +1149,7 @@ function miss(t,picked,pt){
       const cf=S.conf[t]||(S.conf[t]={});cf[picked]=(cf[picked]||0)+1;
       if(cf[picked]>=2)line+=` You've mixed these two up before.`;
       if(peek(picked).n>0&&members(curRegion).includes(picked))insertLater(picked,5);
+      save();
     }
     $('pMsg').innerHTML=line;
   }else $('pMsg').innerHTML=`Here it is. Tap <b>${tn}</b> to continue.`;
@@ -1100,17 +1161,22 @@ function miss(t,picked,pt){
 $('showme').onclick=()=>skip();
 function skip(){
   if(mode!=='play'||!sess)return;
-  if(sess.kind==='run'){if(sess.phase==='ask')runReveal(step().id,`Here it is. Tap <b>${esc(C.get(step().id).name)}</b> to continue.`);else if(sess.phase==='reveal'){setCls(step().id,'reveal',false);runMark(step().id,'rx');advance(0)}return}
+  if(sess.kind==='run'){
+    if(sess.phase==='ask')runReveal(step().id,`Here it is. Tap <b>${esc(C.get(step().id).name)}</b> or continue.`);
+    else if(sess.phase==='reveal'){setCls(step().id,'reveal',false);runMark(step().id,'rx');nextQuestion()}
+    else if(sess.phase==='feedback')nextQuestion();
+    return;
+  }
   if(sess.phase==='ask')miss(step().id,null,null);
-  else if(sess.phase==='reveal')advance(0);
-  else if(sess.phase==='teach')onPick(step().id,null);
+  else if(sess.phase==='reveal'||sess.phase==='feedback'||sess.phase==='teach')nextQuestion();
 }
 $('quit').onclick=()=>{if(mode==='play'&&sess&&Object.keys(sess.res).length>0&&sess.kind!=='challenge')finish();else goHome()};
 addEventListener('keydown',e=>{
   if(e.key==='Escape'&&!$('menu').hidden){closeMenu();$('gearBtn').focus();return}
+  if(e.key==='Escape'&&!$('info').hidden){e.preventDefault();closeInfo();return}
   if(e.key==='Escape'&&mode==='setup'){e.preventDefault();goHome();return}
   if(e.key==='Escape'&&mode!=='home'){e.preventDefault();$('quit').click();return}
-  if(e.key===' '&&mode==='play'){e.preventDefault();skip()}
+  if(e.key===' '&&mode==='play'&&!e.repeat&&!e.target.closest('button,input,textarea,select,a')){e.preventDefault();skip()}
 });
 
 /* finish */
@@ -1170,29 +1236,44 @@ function finish(){
 
 /* explore */
 function startExplore(rid){
-  sess=null;show('explore');
+  sess=null;clearFx();clearTransient();show('explore');
   $('pKick').textContent=`Exploring ${REG[rid].name}`;$('pKick').className='kicker';
   $('pFlag').textContent='';$('pName').textContent='Tap any country';
   $('pMsg').textContent='Zoom in to see more names.';$('tick').textContent='';
   project(rid,true);
   setLabels(members(rid));
 }
+let exploredId=null;
+function closeInfo(){exploredId=null;$('info').hidden=true;clearTransient()}
 function showInfo(id){
   clearTransient();
+  exploredId=id;
   const c=C.get(id),box=$('info');box.hidden=false;
-  if(!c){box.innerHTML=`<h2></h2><p class="sub" style="margin:0">A territory rather than a country, so it isn't in the quiz.</p>`;box.querySelector('h2').textContent=nameOf(id);return}
+  const header='<div class="info-heading"><h2></h2><button class="info-close" aria-label="Close country details">Close</button></div>';
+  if(!c){box.innerHTML=header+`<p class="sub" style="margin:0">A territory rather than a country, so it isn't in the quiz.</p>`;box.querySelector('h2').textContent=nameOf(id);box.querySelector('.info-close').onclick=closeInfo;return}
   setCls(id,'tgt',true);
   const k=peek(id);
-  box.innerHTML=`<h2><span>${c.flag}</span><span class="n"></span></h2>
-    <dl><dt>Capital</dt><dd class="cap"></dd><dt>Region</dt><dd>${esc(REG[c.r].name)}</dd><dt>Your map</dt><dd>${k.b>=3?'Mastered':k.n>0?'Charted':'Uncharted'}</dd></dl>
+  box.innerHTML=header+`
+    <dl><dt>Capital</dt><dd class="cap"></dd><dt>Region</dt><dd>${esc(REG[c.r].name)}</dd><dt>Your map</dt><dd>${k.b>=3?'Mastered':k.c>0?'Charted':'Uncharted'}</dd></dl>
     ${c.nb.length?`<div><p class="sub">Shares a border with</p><div class="chips">${c.nb.map(n=>`<button data-n="${n}">${C.get(n).flag} ${esc(C.get(n).name)}</button>`).join('')}</div></div>`:`<p class="sub" style="margin:0">No land borders with other countries.</p>`}`;
-  box.querySelector('.n').textContent=c.name;
+  box.querySelector('h2').textContent=c.flag+' '+c.name;
+  box.querySelector('.info-close').onclick=closeInfo;
   box.querySelector('.cap').textContent=c.cap||'None';
   box.querySelectorAll('.chips button').forEach(b=>b.onclick=()=>{const n=b.dataset.n;if(C.get(n).r!==curRegion){project(C.get(n).r,true);setLabels(members(curRegion));$('pKick').textContent=`Exploring ${REG[curRegion].name}`}showInfo(n);ensureVisible([n])});
 }
 
 let rz;
-addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{project(curRegion||'world');refreshLabels()},150)});
+addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{
+  if(mode==='home')renderHome();
+  project(curRegion||'world');refreshLabels();
+  if(mode==='play'&&sess){
+    const id=step().id;
+    if(sess.phase==='teach'||sess.phase==='reveal'){
+      setCls(id,sess.phase==='teach'?'tgt':'reveal',true);
+      clearFx();fxLabel(id,C.get(id).name,'t');ensureVisible([id],markers.some(m=>m.id===id)?70:24);
+    }
+  }else if(mode==='explore'&&!$('info').hidden&&exploredId)showInfo(exploredId);
+},150)});
 
 show('home');renderHome();project('world');
 </script>
