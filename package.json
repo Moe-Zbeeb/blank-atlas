@@ -1,0 +1,23 @@
+{
+  "name": "blank-atlas",
+  "version": "1.0.0",
+  "description": "Learn every country on the world map by clicking it.",
+  "scripts": {
+    "data": "node build-data.js",
+    "build": "node build-site.js",
+    "preview": "npx --yes serve dist -l 4173"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "d3": "^7.9.0",
+    "d3-geo": "^3.1.1",
+    "topojson-client": "^3.1.0",
+    "topojson-simplify": "^3.0.3",
+    "world-atlas": "^2.0.2",
+    "world-countries": "^5.1.0"
+  },
+  "private": true
+}

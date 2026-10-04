@@ -1,0 +1,14 @@
+{
+  "name": "Blank Atlas",
+  "short_name": "Blank Atlas",
+  "description": "Learn every country on the world map by clicking it.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f1f3ef",
+  "theme_color": "#f1f3ef",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
