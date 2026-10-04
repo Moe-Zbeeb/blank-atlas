@@ -1,6 +1,6 @@
 # Blank Atlas
 
-Current site: https://moe-zbeeb.github.io/blank-atlas/ (Cloudflare migration pending).
+Play it: https://blank-atlas.pages.dev/
 
 Learn every country on the world map by clicking it. Static web app: no server, no sign-in, progress lives in the browser.
 
@@ -40,7 +40,7 @@ npx wrangler pages project list
 If `blank-atlas` does not exist in the selected account, create it:
 
 ```bash
-npx wrangler pages project create blank-atlas --production-branch main
+npx wrangler pages project create blank-atlas --production-branch main --force
 ```
 
 Publish the latest build:
@@ -48,6 +48,8 @@ Publish the latest build:
 ```bash
 npm run deploy:cloudflare
 ```
+
+The initial creation command uses `--force` to select Pages directly instead of the CLI's automatic Workers migration. Subsequent deployments do not need this flag.
 
 `wrangler.json` selects the `blank-atlas` project and `dist/` output. The deployment command targets the production branch, `main`, and prints the live URL. Set `CLOUDFLARE_ACCOUNT_ID` when deploying from an account with multiple memberships. Keep credentials outside Git.
 
@@ -57,4 +59,6 @@ Multiple visitors can play simultaneously and independently. Progress and scores
 
 Progress from the old GitHub Pages address stays in that browser's storage for that address and does not automatically transfer to Cloudflare.
 
-Keep the old site available until the new deployment has been verified. The site works from a sub-path (all asset URLs are relative). Serve it over HTTPS so the offline cache and "Add to Home Screen" work.
+The Cloudflare deployment is live and verified. The previous GitHub Pages site remains available at https://moe-zbeeb.github.io/blank-atlas/ as a fallback; publish new versions to Cloudflare.
+
+The site works from a sub-path (all asset URLs are relative). Serve it over HTTPS so the offline cache and "Add to Home Screen" work.
