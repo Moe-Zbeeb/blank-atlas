@@ -336,6 +336,9 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
   .region-heading span{max-width:100px;text-align:right}
   .mark{font-size:28px}
 }
+@media (max-height:680px) and (min-width:761px){
+  #home{overflow-y:auto;pointer-events:auto}
+}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -511,6 +514,10 @@ for(const f of features){
 const GC=new Map();
 for(const c of DATA.countries)GC.set(c.id,MAIN.has(c.id)?d3.geoCentroid(MAIN.get(c.id)):[c.ll[1],c.ll[0]]);
 const nameOf=id=>C.has(id)?C.get(id).name:(FEAT.get(id)?.properties.n||String(id).replace(/^~/,''));
+function ctr(id){
+  if(!GC.has(id)&&MAIN.has(id))GC.set(id,d3.geoCentroid(MAIN.get(id)));
+  return GC.get(id)||null;
+}
 
 const color={};
 {const order=[...DATA.countries].sort((a,b)=>b.nb.length-a.nb.length);let rot=0;
@@ -532,8 +539,8 @@ function insets(){
   if(mode==='home'||mode==='summary'){
     if(mode==='summary'&&$('summary').classList.contains('side'))return mobile?[16,8,Math.round(innerHeight*.54),8]:[24,428,24,24];
     if(mode==='summary'||$('home').hidden)return[24,24,24,24];
-    const bt=$('homeBottom').getBoundingClientRect().top,H0=innerHeight;
-    const top=mobile?$('home').querySelector('.h-top').getBoundingClientRect().bottom+6:24;
+    const sc=$('home').scrollTop,bt=$('homeBottom').getBoundingClientRect().top+sc,H0=innerHeight;
+    const top=mobile?$('home').querySelector('.h-top').getBoundingClientRect().bottom+sc+6:24;
     return[top,mobile?8:24,Math.max(24,H0-bt+6),mobile?8:24];
   }
   const top=($('bar').hidden?0:$('bar').getBoundingClientRect().bottom)+14;
@@ -577,8 +584,9 @@ function project(rid,animate){
 }
 
 function setCls(id,cls,on){for(const e of els.get(id)||[])e.classList.toggle(cls,on)}
+const lvl=k=>Math.min(3,k.b>0?k.b:k.c>0?1:0);
 function paint(){
-  for(const c of DATA.countries){const b=Math.min(3,peek(c.id).b);for(const e of els.get(c.id)||[]){e.classList.remove('b1','b2','b3');if(b>0)e.classList.add('b'+b)}}
+  for(const c of DATA.countries){const b=lvl(peek(c.id));for(const e of els.get(c.id)||[]){e.classList.remove('b1','b2','b3');if(b>0)e.classList.add('b'+b)}}
 }
 
 const zoom=d3.zoom().scaleExtent([1,80]).clickDistance(COARSE?10:5)
@@ -603,7 +611,8 @@ function setLabels(ids){labelIds=ids;refreshLabels()}
 function refreshLabels(){
   const data=[];
   for(const id of labelIds){
-    const m=MAIN.get(id),p=proj(GC.get(id));if(!p||!isFinite(p[0]))continue;
+    const g=ctr(id);if(!g)continue;
+    const m=MAIN.get(id),p=proj(g);if(!p||!isFinite(p[0]))continue;
     const nm=nameOf(id),isMk=markers.some(x=>x.id===id);let show=true,dy=0;
     if(isMk){show=T.k>=2.5;dy=-12}else if(m){const [[x0],[x1]]=path.bounds(m);show=(x1-x0)*T.k>nm.length*6.4}
     if(show)data.push({id,x:p[0],y:p[1],dy,nm});
@@ -612,7 +621,8 @@ function refreshLabels(){
   scaleDeps();
 }
 function fxLabel(id,text,cls){
-  const p=proj(GC.get(id));if(!p)return;
+  const g=ctr(id);if(!g)return;
+  const p=proj(g);if(!p||!isFinite(p[0]))return;
   const isMk=markers.some(x=>x.id===id);
   d3.select('#fx').append('text').attr('class','fx '+(cls||'')).attr('data-fs',15).attr('x',p[0]).attr('y',p[1]+(isMk?-15:0)/T.k).text(text);
   scaleDeps();
@@ -628,7 +638,7 @@ function ripple(ev,bad){
 function bounds(id){
   const m=MAIN.get(id);
   if(m&&!markers.some(x=>x.id===id))return path.bounds(m);
-  const p=proj(GC.get(id));if(!p)return[[NaN,NaN],[NaN,NaN]];return[[p[0]-14,p[1]-14],[p[0]+14,p[1]+14]];
+  const g=ctr(id),p=g&&proj(g);if(!p)return[[NaN,NaN],[NaN,NaN]];return[[p[0]-14,p[1]-14],[p[0]+14,p[1]+14]];
 }
 function ensureVisible(ids,minPx){
   const bs=ids.map(bounds).filter(b=>b.flat().every(isFinite));
@@ -652,21 +662,32 @@ $('zout').onclick=()=>svg.transition().duration(250).call(zoom.scaleBy,1/1.6);
 $('zfit').onclick=()=>svg.transition().duration(400).call(zoom.transform,d3.zoomIdentity);
 
 /* picking */
-svg.on('click',e=>{
-  const pt=d3.pointer(e,svg.node()),p=T.invert(pt);
+function countryUnder(e){
+  const stack=document.elementsFromPoint?document.elementsFromPoint(e.clientX,e.clientY):[e.target];
+  const el=stack.find(x=>x&&x.matches&&x.matches('path.c'));
+  return el?el.dataset.id:null;
+}
+function pickAt(e){
+  const pt=d3.pointer(e,svg.node()),p=T.invert(pt),under=countryUnder(e);
   let best=null,bd=(COARSE?20:12)/T.k;
   for(const m of markers){const d=Math.hypot(m.x-p[0],m.y-p[1]);if(d<bd){bd=d;best=m.id}}
-  const hp=e.target.closest&&e.target.closest('path.c');
-  const id=best||(hp&&hp.dataset.id)||null;
-  onPick(id,pt);
-});
+  const isDot=id=>markers.some(m=>m.id===id);
+  const dotRadius=(COARSE?7:5.5)/T.k*1.25;
+  const inRegion=under&&els.get(under)?.[0]?.classList.contains('in');
+  let id;
+  if(best&&bd<=dotRadius)id=best;
+  else if(under&&(isDot(under)||inRegion))id=under;
+  else id=best||under;
+  return{id,pt};
+}
+svg.on('click',e=>{const {id,pt}=pickAt(e);onPick(id||null,pt)});
 
 svg.on('mousemove.tip',e=>{
   const tip=$('tip');
   if(mode!=='explore'||COARSE){tip.hidden=true;return}
-  const el=e.target.closest&&e.target.closest('[data-id]');
-  if(!el){tip.hidden=true;return}
-  const id=el.dataset.id,c=C.get(id);
+  const {id}=pickAt(e);
+  if(!id){tip.hidden=true;return}
+  const c=C.get(id);
   tip.textContent=c?`${c.flag} ${c.name}`:nameOf(id);
   tip.hidden=false;tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY+14)+'px';
 }).on('mouseleave.tip',()=>{$('tip').hidden=true});
@@ -675,7 +696,8 @@ svg.on('mousemove.tip',e=>{
 function bearing(a,b){const r=Math.PI/180,[l1,p1]=[a[0]*r,a[1]*r],[l2,p2]=[b[0]*r,b[1]*r];const y=Math.sin(l2-l1)*Math.cos(p2),x=Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(l2-l1);return(Math.atan2(y,x)/r+360)%360}
 const DIRS=['north','north-east','east','south-east','south','south-west','west','north-west'];
 function relText(from,to){
-  const a=GC.get(from)||d3.geoCentroid(FEAT.get(from)),b=GC.get(to);
+  const a=ctr(from),b=ctr(to);
+  if(!a||!b)return'elsewhere';
   const km=d3.geoDistance(a,b)*6371;
   const r=km<300?Math.round(km/10)*10:km<2000?Math.round(km/50)*50:Math.round(km/100)*100;
   return `${r.toLocaleString()} km ${DIRS[Math.round(bearing(a,b)/45)%8]}`;
@@ -713,7 +735,7 @@ function miniPaths(rid){
 }
 function miniMap(rid){
   return `<svg class="rmap" viewBox="0 0 240 88" preserveAspectRatio="xMidYMid meet" aria-hidden="true">`+miniPaths(rid).map(m=>{
-    const b=Math.min(3,peek(m.id).b),cls=`c in tc${color[m.id]}${b?' b'+b:''}`;
+    const b=lvl(peek(m.id)),cls=`c in tc${color[m.id]}${b?' b'+b:''}`;
     return m.d?`<path class="${cls}" d="${m.d}"/>`:`<circle class="${cls}" cx="${m.cx}" cy="${m.cy}" r="1.6"/>`;
   }).join('')+`</svg>`;
 }
@@ -756,7 +778,8 @@ function renderHome(){
     if(active){
       const cta=document.createElement('button');cta.className='cta';cta.id='cta';
       if(due.length){
-        cta.innerHTML=`<span><b>Review ${due.length} ${due.length===1?'country':'countries'}</b><small>Due today. About ${Math.max(1,Math.round(Math.min(due.length,25)*7/60))} min.</small></span><span class="go">Start</span>`;
+        const nr=Math.min(due.length,25);
+        cta.innerHTML=`<span><b>Review ${nr} ${nr===1?'country':'countries'}</b><small>${due.length>nr?`${due.length} due today; the rest come next.`:'Due today.'} About ${Math.max(1,Math.round(nr*7/60))} min.</small></span><span class="go">Start</span>`;
         cta.onclick=()=>startSession({kind:'review'});
       }else{
         const all=s.charted===s.total;
@@ -768,6 +791,7 @@ function renderHome(){
     box.appendChild(card);
   }
   box.scrollLeft=0;
+  if(innerWidth>760&&box.clientWidth&&box.scrollWidth<=box.clientWidth+4)$('regionHint').textContent='';
   const fade=()=>box.classList.toggle('end',box.scrollLeft+box.clientWidth>=box.scrollWidth-4);box.onscroll=fade;fade();
   const tr=troubleIds(),tb=$('trouble');
   tb.hidden=tr.length<2;
@@ -824,7 +848,7 @@ function show(m){
   svg.classed('blank',(m==='play'||m==='summary')&&!!sess&&['run','team','challenge'].includes(sess.kind));
   svg.classed('quiz',m==='play').classed('home',m==='home'||m==='summary'||m==='setup');
 }
-function goHome(){document.querySelectorAll('.ta,.tb,.r1,.r2,.r3,.rx').forEach(e=>e.classList.remove('ta','tb','r1','r2','r3','rx'));$('summary').classList.remove('side');sess=null;clearFx();setLabels([]);clearTransient();show('home');renderHome();project('world',true)}
+function goHome(){document.querySelectorAll('.ta,.tb,.r1,.r2,.r3,.rx').forEach(e=>e.classList.remove('ta','tb','r1','r2','r3','rx'));$('summary').classList.remove('side');sess=null;clearFx();setLabels([]);clearTransient();show('home');$('home').scrollTop=0;renderHome();project('world',true)}
 
 /* sessions */
 function shuffle(a,rnd=Math.random){for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -914,6 +938,7 @@ function teamFinish(){
   clearTransient();clearFx();setLabels([]);
   show('summary');svg.classed('blank',true);
   const [a,b]=s.score,claimed=[0,1].map(t=>Object.keys(s.owner).filter(id=>s.owner[id]===t));
+  const nobody=s.items.filter(id=>s.res[id]!==undefined&&s.owner[id]===undefined);
   const head=a===b?`It's a draw, ${a} all`:`${a>b?'Blue':'Gold'} wins ${Math.max(a,b)} to ${Math.min(a,b)}`;
   $('summary').innerHTML=`
     <div><p class="kick">${esc(REG[s.region].name==='the world'?'Whole world':REG[s.region].name)}, ${s.rounds} turns each</p><h2>${head}</h2></div>
@@ -921,7 +946,7 @@ function teamFinish(){
       <div class="a${a>b?' win':''}"><span>Blue</span><b>${a}</b><small>${claimed[0].length} ${claimed[0].length===1?'country':'countries'} claimed</small></div>
       <div class="b${b>a?' win':''}"><span>Gold</span><b>${b}</b><small>${claimed[1].length} ${claimed[1].length===1?'country':'countries'} claimed</small></div>
     </div>
-    ${s.items.some(id=>s.owner[id]===undefined)?`<div class="newly"><p>Nobody found these</p><div class="flags">${s.items.filter(id=>s.res[id]!==undefined&&s.owner[id]===undefined).map(id=>`<span>${C.get(id).flag} ${esc(C.get(id).name)}</span>`).join('')}</div></div>`:''}
+    ${nobody.length?`<div class="newly"><p>Nobody found these</p><div class="flags">${nobody.map(id=>`<span>${C.get(id).flag} ${esc(C.get(id).name)}</span>`).join('')}</div></div>`:''}
     <div class="row"><button class="btn primary" id="rematch">Rematch</button><button class="btn" id="tSet">Change settings</button><button class="btn" id="doneBtn">Done</button></div>`;
   $('rematch').onclick=()=>startTeam(s.region,s.rounds);
   $('tSet').onclick=openTeamSetup;
@@ -1019,7 +1044,7 @@ function renderSegs(){
   const cur=step();
   $('segs').classList.toggle('track',sess.kind==='run');
   if(sess.kind==='run'){
-    const d=Object.keys(sess.res).length;
+    const d=sess.items.filter(id=>sess.res[id]!==undefined).length;
     $('segs').innerHTML=`<i class="runbar" style="--p:${d/sess.items.length*100}"></i>`;
     $('tick').textContent=`${d} of ${sess.items.length}`;
     const n={r1:0,r2:0,r3:0,rx:0};
@@ -1037,7 +1062,7 @@ function renderSegs(){
   }).join('');
   $('runTally').hidden=true;
   if(sess.kind==='team'){$('tick').textContent=`${Math.min(sess.pos+1,sess.items.length)} of ${sess.items.length}`;renderScore()}
-  else if(sess.kind!=='challenge'){const d=Object.keys(sess.res).length;$('tick').textContent=`${d} of ${sess.items.length}`}
+  else if(sess.kind!=='challenge'){const d=sess.items.filter(id=>sess.res[id]!==undefined).length;$('tick').textContent=`${d} of ${sess.items.length}`}
 }
 function renderCombo(pop){
   const el=$('combo');
@@ -1185,7 +1210,7 @@ function miss(t,picked,pt){
     const near=C.has(picked)&&C.get(t).nb.includes(picked);
     if(near&&sess.kind==='team'){const tm=step().team;sess.score[tm]+=1;line=`<span class="bad">Close. That's ${pn},</span> right next door. +1 for ${TEAM[tm]}. Tap ${tn} to continue.`}
     else if(near)line=`<span class="bad">Close. That's ${pn},</span> right next door. Tap ${tn} to continue.`;
-    else line=`<span class="bad">That's ${pn}.</span> ${tn} is ${relText(picked,t)} of there. Tap it to continue.`;
+    else{const rel=relText(picked,t);line=`<span class="bad">That's ${pn}${C.has(picked)?'':', a territory rather than a country'}.</span> ${rel==='elsewhere'?`${tn} is highlighted.`:`${tn} is ${rel} of there.`} Tap it to continue.`}
     if(C.has(picked)&&sess.kind!=='challenge'&&sess.kind!=='team'){
       const cf=S.conf[t]||(S.conf[t]={});cf[picked]=(cf[picked]||0)+1;
       if(cf[picked]>=2)line+=` You've mixed these two up before.`;
@@ -1309,6 +1334,7 @@ addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{
   if(mode==='home')renderHome();
   project(curRegion||'world');refreshLabels();
   if(mode==='play'&&sess){
+    clearFx();
     const id=step().id;
     if(sess.phase==='teach'||sess.phase==='reveal'){
       setCls(id,sess.phase==='teach'?'tgt':'reveal',true);

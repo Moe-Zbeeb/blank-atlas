@@ -247,3 +247,60 @@ test('the home screen credits the maker and explains the map colours',t=>{
   assert.match(el('mapKey').textContent,/Uncharted 197/);
   assert.match(el('modeNote').textContent,/Short lessons/);
 });
+
+test('tapping a territory gives feedback instead of crashing',t=>{
+  const {api,el}=game(t);
+  api.startSession({kind:'learn',region:'namerica'});
+  while(api.session.queue[api.session.pos].teach)api.skip();
+  assert.doesNotThrow(()=>api.onPick('GL',null));
+  assert.equal(api.session.phase,'reveal');
+  assert.match(el('pMsg').textContent,/Greenland, a territory rather than a country/);
+  api.goHome();
+  api.startRun('samerica');
+  assert.doesNotThrow(()=>api.onPick('FK',null));
+  assert.match(el('pMsg').textContent,/Falkland Islands/);
+  api.goHome();
+  api.startTeam('africa',3);
+  assert.doesNotThrow(()=>api.onPick('EH',null));
+  assert.equal(api.session.phase,'reveal');
+});
+
+test('the progress counter never exceeds the session size',t=>{
+  const {api,el}=game(t);
+  api.startSession({kind:'learn',region:'europe'});
+  const extra=api.members('europe').find(id=>!api.session.items.includes(id));
+  api.state.cards.find[extra]={b:1,due:Date.now()+86400000,n:1,c:1,w:0};
+  let tapped=false,guard=0;
+  while(api.session&&guard++<200){
+    const s=api.session;
+    if(s.phase==='ask'){api.onPick(tapped?s.queue[s.pos].id:extra,null);tapped=true}else api.skip();
+    if(api.session){const [a,b]=el('tick').textContent.split(' of ').map(Number);assert.ok(a<=b,el('tick').textContent)}
+  }
+});
+
+test('the review button names the number of countries the session will ask',t=>{
+  const now=Date.now(),cards={};
+  for(const id of ['FR','DE','ES','IT','PT','PL','NL','BE','AT','CH','SE','NO','FI','DK','IE','GR','RO','HU','CZ','SK','BG','HR','RS','BA','AL','EE','LV','LT'])cards[id]={b:1,due:now-1000,n:1,c:1,w:0};
+  const {api,el}=game(t,{cards:{find:cards}});
+  assert.match(el('cta').textContent,/Review 25 countries/);
+  assert.match(el('cta').textContent,/28 due today/);
+  el('cta').click();
+  assert.equal(api.session.items.length,25);
+});
+
+test('quitting a team game early does not show an empty list',t=>{
+  const {api,el}=game(t);
+  api.startTeam('europe',5);
+  api.onPick(api.session.queue[0].id,null);
+  el('quit').click();
+  assert.doesNotMatch(el('summary').textContent,/Nobody found these/);
+});
+
+test('a charted country keeps its map colour after a wrong answer',t=>{
+  const {w,api}=game(t,{cards:{find:{PE:{b:1,due:0,n:1,c:1,w:0}}}});
+  api.startSession({kind:'learn',region:'samerica'});
+  api.grade('PE',false);
+  api.goHome();
+  assert.equal(api.state.cards.find.PE.b,0);
+  assert.match(w.document.querySelector('#lands path[data-id="PE"]').getAttribute('class'),/\bb1\b/);
+});
