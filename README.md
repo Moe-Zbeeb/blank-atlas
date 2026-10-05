@@ -18,6 +18,8 @@ npm run build
 - `dist/` — the deployable site: `index.html`, `vendor/` (d3, topojson-client), `sw.js` (offline cache), `manifest.webmanifest`, `icon.svg`
 - `index.html` — the single-file version published as the Claude artifact
 
+`npm run assets` redraws the link preview image (`public/og.png`) and the home-screen icons from `public/icon.svg`; it needs `rsvg-convert`.
+
 `npm run data` regenerates `data.json` (country shapes and facts) from Natural Earth via `world-atlas` and `world-countries`. Only needed when changing the country list or regions.
 
 ## Preview

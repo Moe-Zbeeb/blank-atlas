@@ -60,7 +60,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .hl{stroke:var(--hatch);stroke-width:1.3}
 .c{fill:var(--land-out);stroke:var(--edge-out);stroke-width:.8;vector-effect:non-scaling-stroke;stroke-linejoin:round;transition:fill .5s ease}
 .c.in{fill:url(#hatch);stroke:var(--edge);stroke-width:1}
-#map:not(.home) .c.in:hover,#map:not(.home) .mk:hover{stroke:var(--ink);stroke-width:1.6}
+#map .c.in:hover,#map .mk:hover{stroke:var(--ink);stroke-width:1.6}
 .mk{fill:var(--land);stroke:var(--muted);stroke-width:1;vector-effect:non-scaling-stroke;transition:fill .5s}
 .hit{fill:transparent}
 #map.home #marks{display:none}
@@ -107,6 +107,8 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .runtally{display:flex;flex-wrap:wrap;gap:6px}
 .runtally span{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:650;padding:4px 9px;border-radius:999px;background:var(--land-out);font-variant-numeric:tabular-nums}
 .runtally i{width:9px;height:9px;border-radius:3px}
+#scale{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(28px + env(safe-area-inset-bottom,0px));z-index:2;display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none;font:italic 13px/1 var(--f-water);color:var(--water-ink)}
+#scale i{display:block;height:6px;border:1px solid var(--water-ink);border-radius:1px;background:linear-gradient(90deg,var(--water-ink) 0 25%,transparent 25% 50%,var(--water-ink) 50% 75%,transparent 75%)}
 #tip{position:fixed;z-index:6;pointer-events:none;background:var(--ink);color:var(--paper);font-size:13px;font-weight:650;padding:5px 9px;border-radius:8px;box-shadow:var(--shadow);white-space:nowrap}
 .cartouche p b{color:var(--ink);font-weight:800}
 .ticks{display:block;width:100%;height:8px;margin-bottom:14px}
@@ -306,6 +308,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
   .gear{width:44px;height:44px;padding:10px}
   .menu{width:min(280px,calc(100vw - 24px))}
   .h-bottom{margin-top:clamp(150px,30dvh,280px)}
+  #scale{bottom:calc(80px + env(safe-area-inset-bottom,0px))}
   .tabs{display:flex;width:100%}
   .tabs button{flex:1}
   .key{gap:6px 12px}
@@ -354,6 +357,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
   </svg>
   <div id="ripples"></div>
   <div id="tip" role="tooltip" hidden></div>
+  <div id="scale" aria-hidden="true" hidden><i></i><span></span></div>
 
   <section id="home" aria-label="Home">
     <div class="h-top">
@@ -595,13 +599,27 @@ const zoom=d3.zoom().scaleExtent([1,80]).clickDistance(COARSE?10:5)
   .on('end',()=>refreshLabels());
 svg.call(zoom).on('dblclick.zoom',null);
 
+function renderScale(){
+  const el=$('scale');
+  if(!(mode==='play'||mode==='explore')||curRegion==='world'||!proj||!proj.invert){el.hidden=true;return}
+  const cy=(cameraTop+H-80)/2,a=proj.invert(T.invert([W/2-50,cy])),b=proj.invert(T.invert([W/2+50,cy]));
+  if(!a||!b||!a.every(isFinite)||!b.every(isFinite)){el.hidden=true;return}
+  const kmPerPx=d3.geoDistance(a,b)*6371/100;
+  if(!(kmPerPx>0)){el.hidden=true;return}
+  const nice=[10,20,25,50,100,200,250,500,1000,2000,2500,5000];
+  const len=nice.find(n=>n/kmPerPx>=70&&n/kmPerPx<=150)||nice.reduce((p,n)=>Math.abs(n/kmPerPx-110)<Math.abs(p/kmPerPx-110)?n:p);
+  el.hidden=false;
+  el.querySelector('i').style.width=Math.round(len/kmPerPx)+'px';
+  el.querySelector('span').textContent=`${len.toLocaleString('en')} km`;
+}
 function scaleDeps(){
   const k=T.k;
+  renderScale();
   svg.node().style.setProperty('--sk',(4/k)+'px');
   hatch.setAttribute('patternTransform',`scale(${1/k}) rotate(45)`);
   d3.select('#marks').selectAll('.mk').attr('r',(COARSE?7:5.5)/k);
   d3.select('#marks').selectAll('.hit').attr('r',(COARSE?20:12)/k);
-  d3.select('#labels').selectAll('text').attr('font-size',11/k).attr('stroke-width',3/k);
+  d3.select('#labels').selectAll('text').attr('font-size',d=>(d.fs||11)/k).attr('stroke-width',3/k);
   d3.select('#fx').selectAll('text').attr('font-size',function(){return(+this.dataset.fs||15)/k}).attr('stroke-width',4/k);
   d3.select('#seas').selectAll('text').attr('font-size',d=>(d.big?14:10.5)/k).attr('opacity',d=>d.big?(k<3?1:0):(k<6?1:0));
 }
@@ -609,14 +627,30 @@ function scaleDeps(){
 /* labels */
 let labelIds=[];
 function setLabels(ids){labelIds=ids;refreshLabels()}
+function nameIt(id){
+  if(!sess||!C.has(id))return;
+  (sess.named||(sess.named=new Set())).add(id);
+  setLabels([...new Set([...(sess.anchors||[]),...sess.named])]);
+}
+function homeLabels(){setLabels(DATA.countries.filter(c=>peek(c.id).b>=3).map(c=>c.id))}
 function refreshLabels(){
-  const data=[];
+  const cand=[];
   for(const id of labelIds){
     const g=ctr(id);if(!g)continue;
     const m=MAIN.get(id),p=proj(g);if(!p||!isFinite(p[0]))continue;
-    const nm=nameOf(id),isMk=markers.some(x=>x.id===id);let show=true,dy=0;
-    if(isMk){show=T.k>=2.5;dy=-12}else if(m){const [[x0],[x1]]=path.bounds(m);show=(x1-x0)*T.k>nm.length*6.4}
-    if(show)data.push({id,x:p[0],y:p[1],dy,nm});
+    const nm=nameOf(id),isMk=markers.some(x=>x.id===id);
+    let width=0;if(m&&!isMk){const [[x0],[x1]]=path.bounds(m);width=(x1-x0)*T.k}
+    const fs=!isMk&&width>nm.length*6.4?11:9.5;
+    if(!isMk&&width<nm.length*3.6&&T.k<2)continue;
+    cand.push({id,x:p[0],y:p[1],dy:isMk?-12:0,nm,fs,isMk,rank:(isMk?0:1e9)+(C.get(id)?.area||width)});
+  }
+  cand.sort((a,b)=>b.rank-a.rank);
+  const placed=[],data=[];
+  for(const d of cand){
+    const sx=T.applyX(d.x),sy=T.applyY(d.y)+d.dy,w=d.nm.length*d.fs*.58+6,h=d.fs*1.3;
+    const box=[sx-w/2,sy-h/2,sx+w/2,sy+h/2];
+    if(placed.some(b=>box[0]<b[2]&&box[2]>b[0]&&box[1]<b[3]&&box[3]>b[1]))continue;
+    placed.push(box);data.push(d);
   }
   d3.select('#labels').selectAll('text').data(data,d=>d.id).join('text').attr('class','lbl').attr('x',d=>d.x).attr('y',d=>d.y+d.dy/T.k).text(d=>d.nm);
   scaleDeps();
@@ -685,7 +719,7 @@ svg.on('click',e=>{const {id,pt}=pickAt(e);onPick(id||null,pt)});
 
 svg.on('mousemove.tip',e=>{
   const tip=$('tip');
-  if(mode!=='explore'||COARSE){tip.hidden=true;return}
+  if(!['explore','home','summary'].includes(mode)||COARSE){tip.hidden=true;return}
   const {id}=pickAt(e);
   if(!id){tip.hidden=true;return}
   const c=C.get(id);
@@ -817,7 +851,7 @@ function resetFoot(){
   $('resetWrap').innerHTML='<button class="opt" id="resetBtn"><span>Reset progress</span><span>…</span></button>';
   $('resetBtn').onclick=()=>{
     $('resetWrap').innerHTML='<p class="note" style="margin:6px 0">Erase all progress in this browser?</p><div class="row"><button class="btn danger" id="rYes">Erase</button><button class="btn" id="rNo">Keep</button></div>';
-    $('rYes').onclick=()=>{S=blank();save();resetFoot();paint();renderHome()};
+    $('rYes').onclick=()=>{S=blank();save();resetFoot();paint();renderHome();homeLabels()};
     $('rNo').onclick=resetFoot;
   };
 }
@@ -830,6 +864,7 @@ function show(m){
   mode=m;
   $('home').hidden=m!=='home';
   $('tip').hidden=true;
+  $('scale').hidden=true;
   closeMenu();
   $('summary').classList.remove('side');
   $('combo').className='combo';
@@ -849,7 +884,7 @@ function show(m){
   svg.classed('blank',(m==='play'||m==='summary')&&!!sess&&['run','team','challenge'].includes(sess.kind));
   svg.classed('quiz',m==='play').classed('home',m==='home'||m==='summary'||m==='setup');
 }
-function goHome(){document.querySelectorAll('.ta,.tb,.r1,.r2,.r3,.rx').forEach(e=>e.classList.remove('ta','tb','r1','r2','r3','rx'));$('summary').classList.remove('side');sess=null;clearFx();setLabels([]);clearTransient();show('home');$('home').scrollTop=0;renderHome();project('world',true)}
+function goHome(){document.querySelectorAll('.ta,.tb,.r1,.r2,.r3,.rx').forEach(e=>e.classList.remove('ta','tb','r1','r2','r3','rx'));$('summary').classList.remove('side');sess=null;clearFx();setLabels([]);clearTransient();show('home');$('home').scrollTop=0;renderHome();project('world',true);homeLabels()}
 
 /* sessions */
 function shuffle(a,rnd=Math.random){for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -938,6 +973,7 @@ function teamFinish(){
   const s=sess;sess=null;
   clearTransient();clearFx();setLabels([]);
   show('summary');svg.classed('blank',true);
+  setLabels(s.items.filter(id=>s.res[id]!==undefined));
   const [a,b]=s.score,claimed=[0,1].map(t=>Object.keys(s.owner).filter(id=>s.owner[id]===t));
   const nobody=s.items.filter(id=>s.res[id]!==undefined&&s.owner[id]===undefined);
   const head=a===b?`It's a draw, ${a} all`:`${a>b?'Blue':'Gold'} wins ${Math.max(a,b)} to ${Math.min(a,b)}`;
@@ -967,7 +1003,7 @@ function runTick(s){
   const el=$('combo');el.hidden=false;el.className='combo timer';el.textContent=fmtTime(Date.now()-s.t0);
   setTimeout(()=>runTick(s),500);
 }
-function runMark(id,cls){sess.mark[id]=cls;for(const e of els.get(id)||[]){e.classList.remove('r1','r2','r3','rx');e.classList.add(cls)}}
+function runMark(id,cls){sess.mark[id]=cls;for(const e of els.get(id)||[]){e.classList.remove('r1','r2','r3','rx');e.classList.add(cls)}nameIt(id)}
 function runReveal(t,msg){
   grade(t,false);sess.phase='reveal';sBad();
   setCls(t,'reveal',true);fxLabel(t,C.get(t).name,'t');
@@ -1097,7 +1133,7 @@ function ask(reset=false){
   $('showme').hidden=false;
   if(s.teach){
     kk.textContent='New country';kk.className='kicker new';
-    $('pMsg').innerHTML=`This is <b>${esc(c.name)}</b>. Study its location, then continue.`;
+    $('pMsg').innerHTML=`This is <b>${esc(c.name)}</b>${c.cap?`, capital ${esc(c.cap)}`:''}. Study its location, then continue.`;
     $('showme').innerHTML='Continue <kbd>Space</kbd>';
   }else{
     kk.textContent=sess.kind==='review'?`Review in ${REG[region].name}`:sess.kind==='trouble'?`Trouble spot in ${REG[region].name}`:kicker();
@@ -1113,16 +1149,18 @@ function ask(reset=false){
   if(s.teach){
     setCls(id,'tgt',true);
     const nbs=c.nb.filter(n=>members(curRegion).includes(n));
-    setLabels(nbs);
+    sess.anchors=nbs;
+    setLabels([...new Set([...nbs,...(sess.named||[])])]);
     ensureVisible([id,...nbs.slice(0,6)],24);
     fxLabel(id,c.name,'t');
     sTeach();
   }else{
     const k=peek(id);
     if(sess.kind!=='challenge'&&sess.kind!=='team'&&sess.kind!=='run'&&k.b<=1){
-      const anchors=members(curRegion).filter(x=>x!==id&&peek(x).b>=2);
-      setLabels(anchors);
-    }else setLabels([]);
+      sess.anchors=members(curRegion).filter(x=>x!==id&&peek(x).b>=2);
+    }else sess.anchors=[];
+    sess.anchors=sess.anchors.filter(x=>x!==id);
+    setLabels([...new Set([...sess.anchors,...(sess.named||[])])].filter(x=>x!==id));
   }
 }
 
@@ -1178,7 +1216,7 @@ function onPick(id,pt){
     if(id===t&&sess.kind==='team'){
       grade(t,true);
       const tm=step().team;sess.score[tm]+=3;sess.owner[t]=tm;
-      setCls(t,tm?'tb':'ta',true);ripple(pt);sOk(2);
+      setCls(t,tm?'tb':'ta',true);ripple(pt);sOk(2);nameIt(t);
       clearFx();fxLabel(t,C.get(t).name,'rise');
       $('pMsg').innerHTML=`<span class="ok">+3 for ${TEAM[tm]}.</span> ${esc(C.get(t).name)} is claimed.`;
       renderSegs();advance();
@@ -1190,12 +1228,14 @@ function onPick(id,pt){
       setCls(t,'ok',true);ripple(pt);sOk(sess.combo);
       clearFx();fxLabel(t,C.get(t).name,'rise');
       const k=peek(t);
-      $('pMsg').innerHTML=first&&sess.kind!=='challenge'&&k.b===3?`<span class="ok">Mastered.</span> ${esc(C.get(t).name)} is now fully charted.`:`<span class="ok">${['Correct.','Right.','Yes.','Nice.'][Math.floor(Math.random()*4)]}</span>`;
+      const cap=C.get(t).cap?` Capital: ${esc(C.get(t).cap)}.`:'';
+      $('pMsg').innerHTML=first&&sess.kind!=='challenge'&&k.b===3?`<span class="ok">Mastered.</span> ${esc(C.get(t).name)} is now fully charted.${cap}`:`<span class="ok">${['Correct.','Right.','Yes.','Nice.'][Math.floor(Math.random()*4)]}</span>${cap}`;
+      nameIt(t);
       renderCombo(true);renderSegs();
       advance();
     }else miss(t,id,pt);
   }else if(sess.phase==='reveal'){
-    if(id===t){setCls(t,'reveal',false);setCls(t,'ok',true);ripple(pt);sOk(0);advance()}
+    if(id===t){setCls(t,'reveal',false);setCls(t,'ok',true);ripple(pt);sOk(0);nameIt(t);advance()}
     else{shake(id);sBad()}
   }
 }
@@ -1236,7 +1276,8 @@ function skip(){
     return;
   }
   if(sess.phase==='ask')miss(step().id,null,null);
-  else if(sess.phase==='reveal'||sess.phase==='feedback'||sess.phase==='teach')nextQuestion();
+  else if(sess.phase==='reveal'){nameIt(step().id);nextQuestion()}
+  else if(sess.phase==='feedback'||sess.phase==='teach')nextQuestion();
 }
 $('quit').onclick=()=>{if(mode==='play'&&sess&&Object.keys(sess.res).length>0&&sess.kind!=='challenge')finish();else goHome()};
 addEventListener('keydown',e=>{
@@ -1260,6 +1301,8 @@ function finish(){
   save();
   show('summary');svg.classed('blank',s.kind==='challenge');
   project(s.kind==='learn'?s.region:'world',true);
+  if(s.kind==='challenge')for(const id of s.items)setCls(id,s.res[id]?'r1':'rx',true);
+  setLabels(ids);
   const charted=ids.filter(id=>s.before[id]===0&&peek(id).b>0);
   const mastered=ids.filter(id=>s.before[id]<3&&peek(id).b>=3);
   for(const id of charted)setCls(id,'hlr',true);
@@ -1268,7 +1311,7 @@ function finish(){
   let shareTxt='';
   const head=s.kind==='challenge'?`${first} of 10 in ${fmtTime(ms)}`:`${first} of ${ids.length} right first time`;
   const kick=s.kind==='challenge'?(s.replay?'Daily challenge, practice round':'Daily challenge'):s.kind==='learn'?REG[s.region].name:s.kind==='review'?'Review':'Trouble spots';
-  if(s.kind==='challenge')shareTxt=`Blank Atlas ${today()}\n${s.items.map(id=>s.res[id]?'🟩':'🟥').join('')}\n${first}/10 in ${fmtTime(ms)}`;
+  if(s.kind==='challenge')shareTxt=`Blank Atlas ${today()}\n${s.items.map(id=>s.res[id]?'🟩':'🟥').join('')}\n${first}/10 in ${fmtTime(ms)}\nhttps://blank-atlas.pages.dev/`;
   const reg=s.kind==='learn'?regionStats(s.region):null;
   const g=goalN();
   $('summary').innerHTML=`
@@ -1322,7 +1365,7 @@ function showInfo(id){
   setCls(id,'tgt',true);
   const k=peek(id);
   box.innerHTML=header+`
-    <dl><dt>Capital</dt><dd class="cap"></dd><dt>Region</dt><dd>${esc(REG[c.r].name)}</dd><dt>Your map</dt><dd>${k.b>=3?'Mastered':k.c>0?'Charted':'Uncharted'}</dd></dl>
+    <dl><dt>Capital</dt><dd class="cap"></dd><dt>Region</dt><dd>${esc(REG[c.r].name)}</dd><dt>Area</dt><dd>${c.area.toLocaleString('en')} km²</dd><dt>Your map</dt><dd>${k.b>=3?'Mastered':k.c>0?'Charted':'Uncharted'}</dd></dl>
     ${c.nb.length?`<div><p class="sub">Shares a border with</p><div class="chips">${c.nb.map(n=>`<button data-n="${n}">${C.get(n).flag} ${esc(C.get(n).name)}</button>`).join('')}</div></div>`:`<p class="sub" style="margin:0">No land borders with other countries.</p>`}`;
   box.querySelector('h2').textContent=c.flag+' '+c.name;
   box.querySelector('.info-close').onclick=closeInfo;
@@ -1344,5 +1387,5 @@ addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{
   }else if(mode==='explore'&&!$('info').hidden&&exploredId)showInfo(exploredId);
 },150)});
 
-show('home');renderHome();project('world');
+show('home');renderHome();project('world');homeLabels();
 </script>
