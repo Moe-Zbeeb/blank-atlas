@@ -85,16 +85,35 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 #home>*{pointer-events:none}
 #home .cartouche,#home .h-status>*,#home .qchips>*,#home .strip{pointer-events:auto}
 .h-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;position:relative}
-.cartouche{position:relative;width:320px;background:var(--paper);border:1px solid var(--rule);border-radius:14px;padding:16px 20px 14px;box-shadow:var(--shadow)}
+.cartouche{position:relative;width:368px;background:var(--paper);border:1px solid var(--rule);border-radius:14px;padding:16px 20px 14px;box-shadow:var(--shadow)}
 .cartouche::before{content:"";position:absolute;inset:4px;border:1px solid var(--rule);border-radius:10px;pointer-events:none}
 .mark{margin:0;font:italic 500 30px/1 var(--f-water);letter-spacing:-.01em}
 .cartouche p{margin:5px 0 10px;font-size:13.5px;color:var(--muted);font-weight:500}
+.cartouche .byline{margin:4px 0 0;font:italic 400 14px/1.2 var(--f-water);color:var(--muted);letter-spacing:.01em}
+.key{display:flex;flex-wrap:wrap;gap:6px 14px;margin:-4px 0 12px;font-size:12.5px;color:var(--muted)}
+.key span{display:flex;align-items:center;gap:6px}
+.key b{color:var(--ink);font-weight:750;font-variant-numeric:tabular-nums}
+.key svg{width:16px;height:16px;border-radius:4px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--rule)}
+.mode-desc{margin:10px 0 0!important;font-size:13px!important;line-height:1.4;color:var(--muted)}
+.menu .maker{color:var(--ink);font-weight:600}
+.menu .maker a{color:var(--accent);font-weight:700}
+.rmapwrap{position:relative;display:block}
+.rmapwrap .rbadge{position:absolute;top:6px;right:6px;box-shadow:0 1px 2px #0002}
+.rbar{display:flex;height:5px;border-radius:3px;background:var(--land-out);overflow:hidden;margin-top:4px}
+.rbar i{display:block;height:100%}
+.rbar .m{background:var(--ok)}
+.rbar .c{background:color-mix(in oklab,var(--ok) 38%,var(--land-out))}
+.runtally{display:flex;flex-wrap:wrap;gap:6px}
+.runtally span{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:650;padding:4px 9px;border-radius:999px;background:var(--land-out);font-variant-numeric:tabular-nums}
+.runtally i{width:9px;height:9px;border-radius:3px}
+#tip{position:fixed;z-index:6;pointer-events:none;background:var(--ink);color:var(--paper);font-size:13px;font-weight:650;padding:5px 9px;border-radius:8px;box-shadow:var(--shadow);white-space:nowrap}
 .cartouche p b{color:var(--ink);font-weight:800}
 .ticks{display:block;width:100%;height:8px;margin-bottom:14px}
 .ticks rect{fill:var(--land-out)}
 .ticks rect.ch{fill:color-mix(in oklab,var(--ok) 38%,var(--land-out))}
 .ticks rect.ms{fill:var(--ok)}
-.c-row{display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;z-index:1}
+.c-row{display:flex;align-items:center;gap:10px;position:relative;z-index:1}
+.tabs button{white-space:nowrap}
 .tabs{display:inline-flex;gap:2px;background:var(--land-out);border-radius:9px;padding:2px}
 .tabs button{min-height:44px;padding:8px 14px;border-radius:7px;font-size:13px;font-weight:600;color:var(--muted)}
 .tabs button[aria-pressed="true"]{background:var(--raise);color:var(--ink);box-shadow:0 1px 2px #0002}
@@ -140,7 +159,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .rmap{display:block;width:100%;height:76px;background:var(--ocean);border-radius:9px;border:1px solid var(--rule)}
 .rcard.active .rmap{height:92px}
 .rmap .c{stroke-width:.5}
-.rinfo{display:flex;justify-content:space-between;align-items:flex-end;gap:8px}
+.rinfo{display:flex;flex-direction:column;gap:2px;min-width:0}
 .rinfo b{display:block;font-size:15px;font-weight:750;line-height:1.2}
 .rinfo small{display:block;font-size:12.5px;color:var(--muted)}
 .rbadge{flex-shrink:0;background:var(--accent-soft);color:var(--accent);padding:3px 8px;border-radius:999px;font-size:12px;font-weight:700}
@@ -233,6 +252,8 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .vs span{font-weight:750;font-size:14px}
 
 /* map run */
+#map.blank .c.in.b1,#map.blank .c.in.b2,#map.blank .c.in.b3{fill:url(#hatch)}
+#map.blank .mk.b1,#map.blank .mk.b2,#map.blank .mk.b3{fill:var(--land)}
 .c.r1,.mk.r1{fill:var(--ok)!important}
 .c.r2,.mk.r2{fill:var(--r2)!important}
 .c.r3,.mk.r3{fill:var(--r3)!important}
@@ -283,8 +304,10 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
   .goal .ring{width:24px;height:24px}
   .gear{width:44px;height:44px;padding:10px}
   .menu{width:min(280px,calc(100vw - 24px))}
-  .c-row small{display:none}
-  .h-bottom{margin-top:80px}
+  .h-bottom{margin-top:clamp(150px,30dvh,280px)}
+  .tabs{display:flex;width:100%}
+  .tabs button{flex:1}
+  .key{gap:6px 12px}
   .qchips{order:2;flex-wrap:wrap;overflow:visible;gap:8px;margin-top:8px}
   .chip{min-height:44px;padding:9px 12px;font-size:13px;white-space:normal}
   .strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;overflow:visible;padding:0;gap:10px}
@@ -296,9 +319,9 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
   .c-row{flex-wrap:wrap}
   .rcard.active .rmap{height:64px}
   .rcard.active .rbody{flex-direction:row;align-items:center}
-  .rcard.active .rmap{width:96px;flex-shrink:0}
+  .rcard.active .rmapwrap{width:110px;flex-shrink:0}
+  .rcard.active .rinfo{flex:1}
   .rbody{height:100%;gap:8px;padding:10px}
-  .rinfo{flex-wrap:wrap;align-items:flex-start}
   .rinfo b{font-size:14px}
   .cta{margin:0 10px 10px;padding:10px 12px}
   #bar{top:calc(10px + env(safe-area-inset-top,0px));padding:10px 14px 12px}
@@ -326,21 +349,24 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
     <g id="zg"><g id="grat"></g><g id="seas"></g><g id="lands"></g><g id="marks"></g><g id="labels"></g><g id="fx"></g></g>
   </svg>
   <div id="ripples"></div>
+  <div id="tip" role="tooltip" hidden></div>
 
   <section id="home" aria-label="Home">
     <div class="h-top">
       <div class="cartouche">
         <h1 class="mark">Blank Atlas</h1>
+        <p class="byline">Charted by Mohamad Zbib</p>
         <p id="charted"></p>
         <svg class="ticks" id="ticks" viewBox="0 0 591 8" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <div class="key" id="mapKey" aria-label="Map key"></div>
         <div class="c-row">
           <div class="tabs" role="group" aria-label="Mode">
             <button data-mode="find" aria-pressed="true">Learn</button>
             <button data-mode="run" aria-pressed="false">Map run</button>
             <button data-mode="explore" aria-pressed="false">Explore</button>
           </div>
-          <small id="modeNote"></small>
         </div>
+        <p class="mode-desc" id="modeNote"></p>
       </div>
       <div class="h-status">
         <div class="pillbox streak" id="streak"></div>
@@ -355,6 +381,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
           <button class="opt" id="soundBtn"></button>
           <div id="resetWrap"></div>
           <p class="note">Progress is saved in this browser. Map data from Natural Earth.</p>
+          <p class="note maker">Made by Mohamad Zbib · <a href="https://github.com/Moe-Zbeeb/blank-atlas" target="_blank" rel="noopener">Source on GitHub</a></p>
         </div>
       </div>
     </div>
@@ -383,6 +410,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
       <div class="score" id="score" hidden><span class="sa"><i></i>Blue <b id="scA">0</b></span><span class="sb"><i></i>Gold <b id="scB">0</b></span></div>
     </div>
     <p class="msg" id="pMsg" aria-live="polite"></p>
+    <div class="runtally" id="runTally" hidden></div>
   </header>
 
   <aside id="info" hidden></aside>
@@ -413,8 +441,7 @@ const REGIONS=[
   {id:'europe',name:'Europe',box:[-24,34,46,71]},
   {id:'namerica',name:'North and Central America',box:[-128,6,-58,56]},
   {id:'africa',name:'Africa',box:[-26,-36,58,38]},
-  {id:'mideast',name:'Middle East and Central Asia',box:[25,11,88,55]},
-  {id:'asia',name:'South and East Asia',box:[64,-12,148,53]},
+  {id:'asia',name:'Asia',box:[26,-11,180,76]},
   {id:'oceania',name:'Oceania',box:[112,-47,200,14]},
 ];
 const WORLD={id:'world',name:'the world'};
@@ -439,7 +466,7 @@ function restore(raw){
   if(saved.goal&&typeof saved.goal.date==='string'&&Number.isFinite(saved.goal.n))s.goal={date:saved.goal.date,n:Math.max(0,saved.goal.n)};
   if(saved.chal&&typeof saved.chal.date==='string'&&Array.isArray(saved.chal.res)&&Number.isFinite(saved.chal.score)&&Number.isFinite(saved.chal.ms))s.chal=saved.chal;
   if(saved.team&&REG[saved.team.region]&&[3,5,8,10].includes(saved.team.rounds))s.team=saved.team;
-  if(saved.best&&typeof saved.best==='object')for(const [region,best] of Object.entries(saved.best))if(REG[region]&&best&&Number.isFinite(best.pct)&&best.pct>=0&&best.pct<=100&&Number.isFinite(best.ms)&&best.ms>=0)s.best[region]={pct:best.pct,ms:best.ms,date:typeof best.date==='string'?best.date:''};
+  if(saved.best&&typeof saved.best==='object')for(const [region,best] of Object.entries(saved.best))if(REG[region]&&best&&Number.isFinite(best.pct)&&best.pct>=0&&best.pct<=100&&Number.isFinite(best.ms)&&best.ms>=0&&(best.n===undefined?region!=='asia':best.n===members(region).length))s.best[region]={pct:best.pct,ms:best.ms,n:members(region).length,date:typeof best.date==='string'?best.date:''};
   if(saved.conf&&typeof saved.conf==='object')for(const [id,pairs] of Object.entries(saved.conf))if(C.has(id)&&pairs&&typeof pairs==='object')s.conf[id]=Object.fromEntries(Object.entries(pairs).filter(([other,n])=>C.has(other)&&Number.isFinite(n)&&n>0));
   for(const [id,k] of Object.entries(saved.cards?.find||{})){
     if(!C.has(id)||!k||typeof k!=='object')continue;
@@ -538,7 +565,8 @@ function project(rid,animate){
   els.clear();
   landSel.each(function(d){els.set(d.id,[this])});
   mk.select('.mk').each(function(d){if(!els.has(d.id))els.set(d.id,[]);els.get(d.id).push(this)});
-  const seas=SEAS.filter(s=>rid==='world'?s[2]&&ext[1][0]-ext[0][0]>620:true).map(s=>{const p=proj(s[1]);return p&&isFinite(p[0])?{n:s[0],x:p[0],y:p[1],big:s[2]}:null}).filter(Boolean);
+  const center=rid==='world'?null:[(REG[rid].box[0]+REG[rid].box[2])/2,(REG[rid].box[1]+REG[rid].box[3])/2];
+  const seas=SEAS.filter(s=>rid==='world'?s[2]&&ext[1][0]-ext[0][0]>620:d3.geoDistance(s[1],center)<1.5).map(s=>{const p=proj(s[1]);return p&&isFinite(p[0])?{n:s[0],x:p[0],y:p[1],big:s[2]}:null}).filter(Boolean);
   d3.select('#seas').selectAll('text').data(seas).join('text').attr('class','sea').attr('x',d=>d.x).attr('y',d=>d.y).text(d=>d.n);
   zoom.translateExtent([[-W*.6,-H*.6],[W*1.6,H*1.6]]);
   svg.call(zoom.transform,d3.zoomIdentity);
@@ -633,6 +661,16 @@ svg.on('click',e=>{
   onPick(id,pt);
 });
 
+svg.on('mousemove.tip',e=>{
+  const tip=$('tip');
+  if(mode!=='explore'||COARSE){tip.hidden=true;return}
+  const el=e.target.closest&&e.target.closest('[data-id]');
+  if(!el){tip.hidden=true;return}
+  const id=el.dataset.id,c=C.get(id);
+  tip.textContent=c?`${c.flag} ${c.name}`:nameOf(id);
+  tip.hidden=false;tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY+14)+'px';
+}).on('mouseleave.tip',()=>{$('tip').hidden=true});
+
 /* geography text */
 function bearing(a,b){const r=Math.PI/180,[l1,p1]=[a[0]*r,a[1]*r],[l2,p2]=[b[0]*r,b[1]*r];const y=Math.sin(l2-l1)*Math.cos(p2),x=Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(l2-l1);return(Math.atan2(y,x)/r+360)%360}
 const DIRS=['north','north-east','east','south-east','south','south-west','west','north-west'];
@@ -695,7 +733,9 @@ function renderHome(){
   const order=DATA.countries.map(c=>peek(c.id)).map(k=>k.b>=3?2:k.c>0?1:0).sort((a,b)=>b-a);
   $('ticks').innerHTML=order.map((v,i)=>`<rect x="${i*3}" y="0" width="2" height="8"${v===2?' class="ms"':v===1?' class="ch"':''}/>`).join('');
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===homeMode));
-  $('modeNote').textContent=homeMode==='explore'?'Tap a region to browse':homeMode==='run'?'Every country, one go':'Tap a region to play';
+  $('modeNote').textContent=homeMode==='explore'?'Browse freely. Tap any country to see its capital and neighbours.':homeMode==='run'?'Every country in a region, one after another. Three tries each; the map keeps the colours.':'Short lessons. New countries are shown first, then quizzed, then brought back for review.';
+  const unch=197-w.charted,sw=c=>`<svg viewBox="0 0 16 16" aria-hidden="true">${c}</svg>`;
+  $('mapKey').innerHTML=`<span>${sw('<rect width="16" height="16" rx="3" fill="url(#hatch)"/>')}Uncharted <b>${unch}</b></span><span>${sw('<rect width="6" height="16" style="fill:color-mix(in oklab,var(--t0) 40%,var(--land))"/><rect x="5" width="6" height="16" style="fill:color-mix(in oklab,var(--t2) 40%,var(--land))"/><rect x="10" width="6" height="16" style="fill:color-mix(in oklab,var(--t4) 40%,var(--land))"/>')}Charted <b>${w.charted-w.mast}</b></span><span>${sw('<rect width="6" height="16" style="fill:var(--t0)"/><rect x="5" width="6" height="16" style="fill:var(--t2)"/><rect x="10" width="6" height="16" style="fill:var(--t4)"/>')}Mastered <b>${w.mast}</b></span>`;
   const due=dueIds(),rec=recommended(),regs=homeMode==='run'?[...REGIONS,{id:'world',name:'Whole world'}]:[rec,...REGIONS.filter(r=>r!==rec)];
   $('regionHint').textContent=innerWidth<=760?'Scroll for more':'Scroll sideways to choose a region';
   const box=$('regions');box.innerHTML='';
@@ -703,9 +743,10 @@ function renderHome(){
     const s=regionStats(r.id),active=r===rec&&homeMode==='find';
     const card=document.createElement('div');card.className='rcard'+(active?' active':'');
     const best=S.best[r.id];
-    const line=homeMode==='run'?(best?`${s.total} countries, best ${fmtTime(best.ms)}`:`${s.total} countries`):s.charted===0?`${s.total} countries`:s.mast===s.total?'All mastered':`${s.charted} of ${s.total} charted`;
+    const line=homeMode==='run'?(best?`${s.total} countries, best time ${fmtTime(best.ms)}`:`${s.total} countries, not run yet`):s.charted===0?`${s.total} countries, all uncharted`:s.mast===s.total?`All ${s.total} mastered`:`${s.charted} of ${s.total} charted, ${s.mast} mastered`;
+    const bar=homeMode==='run'?`<span class="rbar" aria-hidden="true"><i class="m" style="width:${best?best.pct:0}%"></i></span>`:`<span class="rbar" aria-hidden="true"><i class="m" style="width:${s.mast/s.total*100}%"></i><i class="c" style="width:${(s.charted-s.mast)/s.total*100}%"></i></span>`;
     const badge=homeMode==='run'?(best?`<span class="rbadge${best.pct===100?' done':''}">Best ${best.pct}%</span>`:''):homeMode==='find'?(s.due?`<span class="rbadge">${s.due} to review</span>`:s.mast===s.total?`<span class="rbadge done">Done</span>`:''):'';
-    card.innerHTML=`<button class="rbody">${miniMap(r.id)}<span class="rinfo"><span><b></b><small>${line}</small></span>${badge}</span></button>`;
+    card.innerHTML=`<button class="rbody"><span class="rmapwrap">${miniMap(r.id)}${badge}</span><span class="rinfo"><b></b><small>${line}</small>${bar}</span></button>`;
     card.querySelector('b').textContent=r.name;
     const body=card.querySelector('.rbody');
     body.setAttribute('aria-label',`${r.name}: ${line}`);
@@ -763,6 +804,7 @@ document.addEventListener('click',e=>{if(!$('menu').hidden&&!e.composedPath().in
 function show(m){
   mode=m;
   $('home').hidden=m!=='home';
+  $('tip').hidden=true;
   closeMenu();
   $('summary').classList.remove('side');
   $('combo').className='combo';
@@ -779,6 +821,7 @@ function show(m){
   $('quit').textContent=m==='explore'?'Back':'End';
   $('quit').setAttribute('aria-label',m==='explore'?'Back to regions':'End session');
   document.querySelectorAll('.hlr').forEach(e=>e.classList.remove('hlr'));
+  svg.classed('blank',(m==='play'||m==='summary')&&!!sess&&['run','team','challenge'].includes(sess.kind));
   svg.classed('quiz',m==='play').classed('home',m==='home'||m==='summary'||m==='setup');
 }
 function goHome(){document.querySelectorAll('.ta,.tb,.r1,.r2,.r3,.rx').forEach(e=>e.classList.remove('ta','tb','r1','r2','r3','rx'));$('summary').classList.remove('side');sess=null;clearFx();setLabels([]);clearTransient();show('home');renderHome();project('world',true)}
@@ -869,7 +912,7 @@ function startTeam(region,rounds){
 function teamFinish(){
   const s=sess;sess=null;
   clearTransient();clearFx();setLabels([]);
-  show('summary');
+  show('summary');svg.classed('blank',true);
   const [a,b]=s.score,claimed=[0,1].map(t=>Object.keys(s.owner).filter(id=>s.owner[id]===t));
   const head=a===b?`It's a draw, ${a} all`:`${a>b?'Blue':'Gold'} wins ${Math.max(a,b)} to ${Math.min(a,b)}`;
   $('summary').innerHTML=`
@@ -902,6 +945,7 @@ function runMark(id,cls){sess.mark[id]=cls;for(const e of els.get(id)||[]){e.cla
 function runReveal(t,msg){
   grade(t,false);sess.phase='reveal';sBad();
   setCls(t,'reveal',true);fxLabel(t,C.get(t).name,'t');
+  sess.autoZoom=true;
   ensureVisible([t],markers.some(m=>m.id===t)?70:0);
   $('pMsg').innerHTML=msg;$('showme').innerHTML='Skip <kbd>Space</kbd>';renderSegs();
 }
@@ -936,13 +980,14 @@ function runFinish(){
   const total=s.items.length,complete=ids.length===total;
   const pct=Math.round(n.r1/total*100);
   let isBest=false,hadPrev=!!S.best[s.region];
-  if(complete){const prev=S.best[s.region];if(!prev||pct>prev.pct||(pct===prev.pct&&ms<prev.ms)){S.best[s.region]={pct,ms,date:today()};isBest=true}}
+  if(complete){const prev=S.best[s.region];if(!prev||pct>prev.pct||(pct===prev.pct&&ms<prev.ms)){S.best[s.region]={pct,ms,n:total,date:today()};isBest=true}}
   if(ids.length&&!S.days.includes(today())){S.days.push(today());S.days=S.days.slice(-400)}
   save();
-  show('summary');
+  show('summary');svg.classed('blank',true);
   $('summary').classList.add('side');
   project(s.region,true);
   for(const [id,cls] of Object.entries(s.mark))setCls(id,cls,true);
+  setLabels(s.items);
   const name=s.region==='world'?'the whole world':REG[s.region].name;
   const missed=ids.filter(id=>s.mark[id]!=='r1');
   $('summary').innerHTML=`
@@ -976,7 +1021,11 @@ function renderSegs(){
   if(sess.kind==='run'){
     const d=Object.keys(sess.res).length;
     $('segs').innerHTML=`<i class="runbar" style="--p:${d/sess.items.length*100}"></i>`;
-    $('tick').textContent=`${d}/${sess.items.length}`;
+    $('tick').textContent=`${d} of ${sess.items.length}`;
+    const n={r1:0,r2:0,r3:0,rx:0};
+    for(const id of sess.items){const m=sess.mark[id]||(sess.res[id]===false?'rx':null);if(m)n[m]++}
+    $('runTally').hidden=false;
+    $('runTally').innerHTML=`<span><i style="background:var(--ok)"></i>${n.r1} first try</span><span><i style="background:var(--r2)"></i>${n.r2} second</span><span><i style="background:var(--r3)"></i>${n.r3} third</span><span><i style="background:var(--bad)"></i>${n.rx} missed</span>`;
     return;
   }
   $('segs').innerHTML=sess.items.map(id=>{
@@ -986,8 +1035,9 @@ function renderSegs(){
     if(sess.kind==='team'&&cls==='now')return`<i style="background:color-mix(in oklab,var(--t${cur.team?'b':'a'}) 40%,var(--land-out))"></i>`;
     return`<i class="${cls}"></i>`;
   }).join('');
-  if(sess.kind==='team'){$('tick').textContent=`${Math.min(sess.pos+1,sess.items.length)}/${sess.items.length}`;renderScore()}
-  else if(sess.kind!=='challenge'){const d=Object.keys(sess.res).length;$('tick').textContent=`${d}/${sess.items.length}`}
+  $('runTally').hidden=true;
+  if(sess.kind==='team'){$('tick').textContent=`${Math.min(sess.pos+1,sess.items.length)} of ${sess.items.length}`;renderScore()}
+  else if(sess.kind!=='challenge'){const d=Object.keys(sess.res).length;$('tick').textContent=`${d} of ${sess.items.length}`}
 }
 function renderCombo(pop){
   const el=$('combo');
@@ -1031,7 +1081,9 @@ function ask(reset=false){
     $('pMsg').textContent='Tap the country on the map. Drag to move; use + and − to zoom.';
   }
   renderSegs();
-  if(reset||curRegion!==region||Math.abs(cameraTop-insets()[0])>1)project(region,true);
+  if(reset||curRegion!==region||insets()[0]-cameraTop>40)project(region,true);
+  else if(sess.autoZoom)(RM?svg:svg.transition().duration(450).ease(d3.easeCubicInOut)).call(zoom.transform,d3.zoomIdentity);
+  sess.autoZoom=false;
   if(s.teach){
     setCls(id,'tgt',true);
     const nbs=c.nb.filter(n=>members(curRegion).includes(n));
@@ -1055,7 +1107,11 @@ function grade(id,correct){
   if(correct){bumpGoal();sess.combo++;sess.best=Math.max(sess.best,sess.combo)}else sess.combo=0;
   if(sess.kind!=='challenge'){
     const k=card(id),now=Date.now();k.n++;
-    if(correct){k.c++;if(k.b===0||k.lastDay!==today()){k.b=Math.min(6,k.b+1);k.lastDay=today()}k.due=now+INT[k.b]}
+    if(correct){
+      k.c++;
+      if(k.b===0||k.lastDay!==today()){k.b=Math.min(6,k.b+1);k.lastDay=today();k.due=now+INT[k.b]}
+      else{const t=new Date();t.setHours(24,0,0,0);k.due=t.getTime()}
+    }
     else{k.w++;k.b=k.b>=3?1:0;k.due=now}
     paint();
   }
@@ -1139,6 +1195,7 @@ function miss(t,picked,pt){
     $('pMsg').innerHTML=line;
   }else $('pMsg').innerHTML=`Here it is. Tap <b>${tn}</b> to continue.`;
   setCls(t,'reveal',true);fxLabel(t,C.get(t).name,'t');
+  sess.autoZoom=true;
   ensureVisible(picked&&C.has(picked)?[t,picked]:[t],markers.some(m=>m.id===t)?70:0);
   $('showme').innerHTML='Skip <kbd>Space</kbd>';
   renderCombo(false);renderSegs();
@@ -1175,7 +1232,7 @@ function finish(){
   const ms=Date.now()-s.t0;
   if(s.kind==='challenge'&&!s.replay)S.chal={date:today(),score:first,ms,res:s.items.map(id=>s.res[id]?1:0)};
   save();
-  show('summary');
+  show('summary');svg.classed('blank',s.kind==='challenge');
   project(s.kind==='learn'?s.region:'world',true);
   const charted=ids.filter(id=>s.before[id]===0&&peek(id).b>0);
   const mastered=ids.filter(id=>s.before[id]<3&&peek(id).b>=3);

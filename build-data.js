@@ -31,12 +31,12 @@ for(const [key,gs] of groups){
 t.arcs=t.arcs.map(a=>a.map(p=>[p[0],p[1]]));t.objects={countries:{type:'GeometryCollection',geometries:out}};
 const regionOf=c=>{
   const s=c.subregion;
+  if(c.cca2==='RU'||c.region==='Asia')return'asia';
   if(c.region==='Africa')return'africa';
   if(c.region==='Europe')return'europe';
   if(c.region==='Oceania')return'oceania';
   if(s==='South America')return'samerica';
   if(c.region==='Americas')return'namerica';
-  if(s==='Western Asia'||s==='Central Asia'||c.cca2==='IR'||c.cca2==='AF')return'mideast';
   return'asia';
 };
 const countries=sov.map(c=>({
@@ -54,4 +54,4 @@ const fs=require('fs');
 const q=topojson.quantize(t,1e5);fs.writeFileSync('data.json',JSON.stringify({topo:q,countries}));
 console.log('size',fs.statSync('data.json').size, 'countries',countries.length);
 const cnt={};countries.forEach(c=>cnt[c.r]=(cnt[c.r]||0)+1);console.log(cnt);
-console.log(countries.filter(c=>c.r==='mideast').map(c=>c.name).join(', '));
+console.log(countries.filter(c=>c.r==='asia').map(c=>c.name).join(', '));

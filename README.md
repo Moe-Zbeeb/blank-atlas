@@ -4,6 +4,8 @@ Play it: https://blank-atlas.pages.dev/
 
 Learn every country on the world map by clicking it. Static web app: no server, no sign-in, progress lives in the browser.
 
+Made by Mohamad Zbib.
+
 ## Build
 
 ```bash

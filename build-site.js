@@ -24,6 +24,7 @@ const html=`<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="author" content="Mohamad Zbib">
 <meta name="description" content="Learn every country on the world map. Click to find countries, chart your own atlas, and play with a friend.">
 <meta name="theme-color" content="#f1f3ef" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0f181b" media="(prefers-color-scheme: dark)">

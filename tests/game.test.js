@@ -32,9 +32,9 @@ function game(t,saved){
   return{w,api,el:id=>w.document.getElementById(id)};
 }
 
-test('all seven regions are available on the home screen',t=>{
+test('all six regions are available on the home screen',t=>{
   const {w,el}=game(t);
-  assert.equal(w.document.querySelectorAll('.rcard').length,7);
+  assert.equal(w.document.querySelectorAll('.rcard').length,6);
   assert.equal(el('home').hidden,false);
   assert.match(el('regionHint').textContent,/choose a region/);
 });
@@ -210,4 +210,40 @@ test('skipping a map run reveal records the missed country before advancing',t=>
   api.skip();
   assert.equal(api.session.mark[id],'rx');
   assert.equal(api.session.pos,1);
+});
+
+test('Asia is one region that includes Russia',t=>{
+  const {api}=game(t);
+  const asia=api.members('asia');
+  assert.equal(asia.length,49);
+  for(const id of ['RU','TR','SA','KZ','IN','CN','JP','ID'])assert.ok(asia.includes(id),id);
+  assert.equal(api.members('europe').includes('RU'),false);
+  assert.equal(api.C.get('RU').r,'asia');
+});
+
+test('map run bests from the old split Asia regions are not shown for the merged region',t=>{
+  const {api}=game(t,{best:{asia:{pct:90,ms:60000},mideast:{pct:80,ms:50000},europe:{pct:70,ms:90000}}});
+  assert.equal(api.state.best.asia,undefined);
+  assert.equal(api.state.best.mideast,undefined);
+  assert.equal(api.state.best.europe.pct,70);
+});
+
+test('a same-day repeat is scheduled for tomorrow instead of every ten minutes',t=>{
+  const {api}=game(t);
+  api.startSession({kind:'learn',region:'samerica'});
+  api.grade('BR',true);
+  const first=api.state.cards.find.BR.due;
+  assert.ok(first-Date.now()<=10*60000+1000);
+  api.startSession({kind:'learn',region:'samerica'});
+  api.grade('BR',true);
+  const tomorrow=new Date();tomorrow.setHours(24,0,0,0);
+  assert.equal(api.state.cards.find.BR.b,1);
+  assert.equal(api.state.cards.find.BR.due,tomorrow.getTime());
+});
+
+test('the home screen credits the maker and explains the map colours',t=>{
+  const {w,el}=game(t);
+  assert.match(w.document.querySelector('.byline').textContent,/Mohamad Zbib/);
+  assert.match(el('mapKey').textContent,/Uncharted 197/);
+  assert.match(el('modeNote').textContent,/Short lessons/);
 });
