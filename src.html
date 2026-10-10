@@ -12,9 +12,15 @@
   --water-ink:#5f8592;
   --grat:#bfd3d9;
   --land:#f6f4ee;
-  --hatch:#d8d3c4;
+  --hatch:#e4e0d5;
   --land-out:#e1e6e2;
   --edge:#ffffff;
+  --edge-out:var(--edge);
+  --edge-width:1;
+  --hatch-opacity:1;
+  --map-glow:transparent;
+  --label-bg:var(--raise);
+  --label-edge:var(--rule);
   --ink:#16242a;
   --muted:#5a6a70;
   --rule:#d5dcdb;
@@ -31,15 +37,18 @@
   --f-water:"Newsreader",Georgia,"Times New Roman",serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --paper:#0f181b;--ocean:#0b1c23;--water-ink:#5d8a99;--grat:#14303a;--land:#283337;--hatch:#35444a;--land-out:#18252a;--edge:#0b1c23;
-  --ink:#e8eeec;--muted:#93a4a8;--rule:#24353b;--raise:#16232a;--accent:#ff58b4;--accent-ink:#22050f;--accent-soft:#4a1832;
+  --paper:#101b2a;--ocean:#081321;--water-ink:#8eb3c9;--grat:#203b50;--land:#2e455a;--hatch:#456078;--land-out:#1b2b3d;--edge:#a6c0d1;
+  --edge-out:#577187;--edge-width:1.2;--hatch-opacity:.25;--map-glow:#19364b80;--label-bg:#112337;--label-edge:#678ba6;
+  --ink:#edf4fa;--muted:#acbdcd;--rule:#3b5065;--raise:#18283a;--accent:#ff70bb;--accent-ink:#290d1d;--accent-soft:#44213b;
   --ok:#4ccb80;--bad:#ff6d50;--ta:#5e95ff;--tb:#f2b52c;--r2:#f0c53e;--r3:#ff9a4a;--t0:#94793c;--t1:#557f46;--t2:#97554d;--t3:#625a96;--t4:#3b8079;
-  --shadow:0 1px 2px #0007,0 12px 32px #0009;color-scheme:dark}}
+  --shadow:inset 0 1px 0 #b8d7ee10,0 2px 6px #02070c40,0 12px 32px #02070c66;color-scheme:dark}}
 :root[data-theme="dark"]{
-  --paper:#0f181b;--ocean:#0b1c23;--water-ink:#5d8a99;--grat:#14303a;--land:#283337;--hatch:#35444a;--land-out:#18252a;--edge:#0b1c23;
-  --ink:#e8eeec;--muted:#93a4a8;--rule:#24353b;--raise:#16232a;--accent:#ff58b4;--accent-ink:#22050f;--accent-soft:#4a1832;
+  --paper:#101b2a;--ocean:#081321;--water-ink:#8eb3c9;--grat:#203b50;--land:#2e455a;--hatch:#456078;--land-out:#1b2b3d;--edge:#a6c0d1;
+  --edge-out:#577187;--edge-width:1.2;--hatch-opacity:.25;--map-glow:#19364b80;--label-bg:#112337;--label-edge:#678ba6;
+  --ink:#edf4fa;--muted:#acbdcd;--rule:#3b5065;--raise:#18283a;--accent:#ff70bb;--accent-ink:#290d1d;--accent-soft:#44213b;
   --ok:#4ccb80;--bad:#ff6d50;--ta:#5e95ff;--tb:#f2b52c;--r2:#f0c53e;--r3:#ff9a4a;--t0:#94793c;--t1:#557f46;--t2:#97554d;--t3:#625a96;--t4:#3b8079;
-  --shadow:0 1px 2px #0007,0 12px 32px #0009;color-scheme:dark}
+  --shadow:inset 0 1px 0 #b8d7ee10,0 2px 6px #02070c40,0 12px 32px #02070c66;color-scheme:dark}
+:root[data-theme="light"]{color-scheme:light}
 
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
@@ -51,14 +60,14 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 #app{position:relative;height:100%;height:100dvh;overflow:hidden}
 
 /* map */
-#map{position:absolute;inset:0;width:100%;height:100%;background:var(--ocean);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+#map{position:absolute;inset:0;width:100%;height:100%;background:radial-gradient(ellipse at 50% 42%,var(--map-glow),transparent 75%),var(--ocean);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
 #map.quiz{cursor:pointer}
 #map:active{cursor:grabbing}
 #grat path{fill:none;stroke:var(--grat);stroke-width:.6;vector-effect:non-scaling-stroke}
 .hb{fill:var(--land)}
-.hl{stroke:var(--hatch);stroke-width:1.3}
-.c{fill:var(--land-out);stroke:var(--edge);stroke-width:.75;vector-effect:non-scaling-stroke;stroke-linejoin:round;transition:fill .5s ease}
-.c.in{fill:url(#hatch)}
+.hl{stroke:var(--hatch);stroke-width:1.3;stroke-opacity:var(--hatch-opacity)}
+.c{fill:var(--land-out);stroke:var(--edge-out);stroke-width:var(--edge-width);vector-effect:non-scaling-stroke;stroke-linejoin:round;transition:fill .25s ease}
+.c.in{fill:url(#hatch);stroke:var(--edge)}
 #map:not(.home) .c.in:hover,#map:not(.home) .mk:hover{stroke:var(--ink);stroke-width:1.6}
 .mk{fill:var(--land);stroke:var(--muted);stroke-width:1;vector-effect:non-scaling-stroke;transition:fill .5s}
 .hit{fill:transparent}
@@ -71,11 +80,12 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 @keyframes pulse{50%{fill-opacity:.55}}
 @keyframes shake{20%{transform:translateX(var(--sk))}40%{transform:translateX(calc(var(--sk)*-1))}60%{transform:translateX(calc(var(--sk)*.6))}80%{transform:translateX(calc(var(--sk)*-.6))}}
 .sea{font-family:var(--f-water);font-style:italic;fill:var(--water-ink);text-anchor:middle;pointer-events:none;letter-spacing:.04em}
-.lbl{font-family:var(--f-ui);font-weight:600;fill:var(--ink);fill-opacity:.7;paint-order:stroke;stroke:var(--land);stroke-opacity:.85;stroke-linejoin:round;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+.country-label{pointer-events:none}
+.country-label rect{fill:var(--label-bg);fill-opacity:.98;stroke:var(--label-edge);stroke-width:1}
+.country-label line{stroke:var(--label-edge);stroke-opacity:.8;stroke-width:1}
+.lbl{font-family:var(--f-ui);font-size:12px;font-weight:650;fill:var(--ink);text-anchor:middle;dominant-baseline:central}
 .fx{font-family:var(--f-ui);font-weight:750;fill:var(--ink);paint-order:stroke;stroke:var(--raise);stroke-linejoin:round;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
 .fx.t{fill:var(--accent)}
-.fx.rise{fill:var(--ok);animation:rise 1s ease-out forwards}
-@keyframes rise{from{opacity:0;transform:translateY(0)}20%{opacity:1}to{opacity:0;transform:translateY(calc(var(--sk)*-6))}}
 .ripple{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2px solid var(--ok);pointer-events:none;animation:ripple .55s ease-out forwards}
 .ripple.bad{border-color:var(--bad)}
 @keyframes ripple{to{transform:scale(4.5);opacity:0}}
@@ -98,7 +108,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .tabs{display:inline-flex;gap:2px;background:var(--land-out);border-radius:9px;padding:2px}
 .tabs button{min-height:44px;padding:8px 14px;border-radius:7px;font-size:13px;font-weight:600;color:var(--muted)}
 .tabs button[aria-pressed="true"]{background:var(--raise);color:var(--ink);box-shadow:0 1px 2px #0002}
-.c-row small{font-size:12px;color:var(--muted);text-align:right}
+#modeNote{margin:10px 0 0;font-size:13px;line-height:1.45;color:var(--muted);min-height:2.9em}
 .h-status{display:flex;gap:10px;align-items:center;position:relative}
 .pillbox{display:flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--rule);border-radius:999px;padding:6px 14px 6px 8px;box-shadow:var(--shadow);font-size:14px;font-weight:700;white-space:nowrap}
 .pillbox small{font-weight:500;color:var(--muted);font-size:12.5px}
@@ -115,10 +125,17 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .menu button.opt{display:flex;justify-content:space-between;align-items:center;width:100%;padding:8px 0;border-top:1px solid var(--rule);font-weight:600}
 .menu .note{margin:0;font-size:12px;color:var(--muted)}
 .menu .danger{color:var(--bad);font-weight:700}
+.appearance{display:flex;flex-direction:column;gap:8px;padding-bottom:12px;border-bottom:1px solid var(--rule)}
+.appearance b{font-size:12px;color:var(--muted);font-weight:600}
+.appearance .tabs{display:flex}
+.appearance .tabs button{flex:1;padding:8px 10px}
 .h-bottom{display:flex;flex-direction:column;gap:12px;min-width:0}
 .region-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 2px;color:var(--ink)}
 .region-heading h2{margin:0;font-size:16px}
 .region-heading span{font-size:12px;color:var(--muted)}
+.region-nav{display:flex;gap:6px;pointer-events:auto}
+.region-nav button{min-height:44px;padding:8px 12px;background:var(--raise);border:1px solid var(--rule);border-radius:9px;font-size:12px;font-weight:700}
+.region-nav button:disabled{opacity:.4;cursor:default}
 .qchips{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:2px}
 .qchips::-webkit-scrollbar{display:none}
 .chip{display:flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--rule);border-radius:999px;padding:8px 15px;font-size:13.5px;font-weight:650;box-shadow:var(--shadow);white-space:nowrap;transition:transform .12s}
@@ -131,30 +148,32 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .chip .sq{display:flex;gap:2px}
 .chip .sq i{width:6px;height:6px;border-radius:1.5px;background:var(--ok)}
 .chip .sq i.x{background:var(--bad)}
-.strip{display:flex;gap:12px;overflow-x:auto;align-items:flex-end;padding:4px 2px 10px;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:var(--muted) transparent}
+.strip{display:flex;gap:12px;overflow-x:auto;align-items:stretch;padding:4px 2px 10px;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:var(--muted) transparent}
 .strip.end{-webkit-mask-image:none;mask-image:none}
 .rcard{flex:0 0 214px;scroll-snap-align:start;background:var(--paper);border:1px solid var(--rule);border-radius:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;transition:transform .14s,border-color .14s}
 .rcard:hover{transform:translateY(-2px)}
-.rcard.active{flex-basis:276px;border:2px solid var(--accent)}
+.rcard.active{border-color:var(--accent)}
+.r-action{display:block;padding:10px 12px;background:var(--land-out);border-radius:8px;font-size:13px;font-weight:750;margin-top:auto}
+.rcard.active .r-action{background:var(--accent);color:var(--accent-ink)}
+.rbody{height:100%}
+.rinfo{min-height:56px;flex-wrap:wrap}
 .rbody{display:flex;flex-direction:column;gap:10px;padding:12px 12px 12px;text-align:left;width:100%}
 .rmap{display:block;width:100%;height:76px;background:var(--ocean);border-radius:9px;border:1px solid var(--rule)}
-.rcard.active .rmap{height:92px}
+.rcard.active .rmap{height:76px}
 .rmap .c{stroke-width:.5}
 .rinfo{display:flex;justify-content:space-between;align-items:flex-end;gap:8px}
 .rinfo b{display:block;font-size:15px;font-weight:750;line-height:1.2}
 .rinfo small{display:block;font-size:12.5px;color:var(--muted)}
 .rbadge{flex-shrink:0;background:var(--accent-soft);color:var(--accent);padding:3px 8px;border-radius:999px;font-size:12px;font-weight:700}
 .rbadge.done{background:color-mix(in oklab,var(--ok) 16%,transparent);color:var(--ok)}
-.cta{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:0 12px 12px;padding:12px 14px;border-radius:11px;background:var(--accent);color:var(--accent-ink);text-align:left;box-shadow:0 2px 0 color-mix(in oklab,var(--accent) 70%,#000);transition:transform .12s,box-shadow .12s}
-.cta:hover{transform:translateY(-1px)}
-.cta:active{transform:translateY(2px);box-shadow:none}
-.cta b{display:block;font-size:15px;font-weight:800;line-height:1.15}
-.cta small{display:block;font-size:12px;opacity:.88;margin-top:1px}
-.cta .go{font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:999px;background:color-mix(in oklab,var(--accent-ink) 18%,transparent);white-space:nowrap}
+
 
 /* play */
 #bar{position:absolute;left:50%;transform:translateX(-50%);top:16px;width:min(600px,calc(100% - 32px));background:var(--raise);border:1px solid var(--rule);border-radius:18px;box-shadow:var(--shadow);padding:12px 16px 14px;display:flex;flex-direction:column;gap:8px;z-index:3}
 .bar-top{display:flex;align-items:center;gap:12px}
+.bar-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--rule);padding-bottom:8px}
+#playMode{font-size:12px;font-weight:750;color:var(--muted)}
+#exploreRegion{max-width:70%;min-width:0;min-height:44px;border:1px solid var(--rule);border-radius:9px;background:var(--paper);color:var(--ink);font:600 13px var(--f-ui);padding:0 10px}
 .segs{flex:1;display:flex;gap:3px;height:6px}
 .segs i{flex:1;border-radius:3px;background:var(--land-out);transition:background .3s}
 .segs i.ok{background:var(--ok)}
@@ -165,7 +184,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 #quit:hover{background:var(--land-out);color:var(--ink)}
 #quit svg{width:14px;height:14px;stroke:currentColor;stroke-width:2.2}
 .q{display:flex;align-items:center;gap:12px;min-width:0}
-.q .flag{font-size:32px;line-height:1}
+.q .flag{font-size:32px;line-height:1;flex-shrink:0;background:var(--paper);border:1px solid var(--rule);border-radius:12px;padding:10px}
 .q .flag:empty{display:none}
 .q .qt{min-width:0;flex:1}
 .q .kicker{font-size:12.5px;color:var(--muted);font-weight:600;line-height:1.2}
@@ -178,16 +197,34 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .msg b{color:var(--ink)}
 .msg .bad{color:var(--bad);font-weight:700}
 .msg .ok{color:var(--ok);font-weight:700}
-#ctrls{position:absolute;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:flex-end;pointer-events:none;z-index:3}
+#ctrls{position:absolute;left:20px;right:20px;bottom:calc(20px + env(safe-area-inset-bottom,0px));display:flex;justify-content:space-between;align-items:flex-end;gap:12px;pointer-events:none;z-index:3}
 #ctrls>*{pointer-events:auto}
-.zoom{display:flex;flex-direction:column;background:var(--raise);border:1px solid var(--rule);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
-.zoom button{width:44px;height:44px;display:grid;place-items:center}
-.zoom button+button{border-top:1px solid var(--rule)}
+.map-dock{display:flex;flex-direction:column;gap:8px;max-width:calc(100% - 148px)}
+.map-context{display:flex;align-items:center;gap:8px;max-width:100%;padding:8px 12px;border:1px solid var(--rule);border-radius:10px;background:var(--raise);box-shadow:var(--shadow);font-size:12px;font-weight:650}
+.map-context::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);flex-shrink:0}
+#mapRegion{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zoom{display:flex;align-items:center;align-self:flex-start;background:var(--raise);border:1px solid var(--rule);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+.zoom button{min-width:44px;height:44px;display:flex;align-items:center;justify-content:center;gap:7px}
+.zoom button+button{border-left:1px solid var(--rule)}
+.zoom button:disabled{opacity:.35;cursor:default}
+.zoom button:disabled:hover{background:none}
+#zoomLevel{min-width:52px;text-align:center;font-size:12px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+#zfit{padding:0 12px;font-size:12px;font-weight:650;border-left:1px solid var(--rule)}
 .zoom button:hover{background:var(--land-out)}
 .zoom svg{width:16px;height:16px;stroke:var(--ink);stroke-width:2;fill:none}
+.map-help{font-size:11px;color:var(--muted);padding:0 2px}
+.map-legend{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);display:flex;gap:12px;align-items:center;padding:8px 12px;background:var(--raise);border:1px solid var(--rule);border-radius:999px;font-size:11px;color:var(--muted);box-shadow:var(--shadow);z-index:2;pointer-events:none}
+.map-legend span{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.map-legend i{width:8px;height:8px;border-radius:3px;background:var(--ok)}
+.map-legend .target{background:var(--accent)}
+.map-legend .unseen{background:var(--land);border:1px solid var(--muted)}
 .pill{padding:12px 18px;border-radius:999px;font-weight:700;font-size:14px;display:flex;gap:10px;align-items:center;background:var(--raise);border:1px solid var(--rule);box-shadow:var(--shadow)}
 .pill:hover{border-color:var(--accent)}
 .pill kbd{font:600 11px/1 var(--f-ui);padding:3px 6px;border-radius:5px;background:var(--land-out);color:var(--muted)}
+#showme{border-color:var(--accent);color:var(--accent)}
+#showme.next{background:var(--accent);color:var(--accent-ink)}
+#showme.next kbd{background:color-mix(in oklab,var(--accent-ink) 15%,transparent);color:var(--accent-ink)}
+#bar:focus{outline:none}
 @media (pointer:coarse){.pill kbd{display:none}}
 
 #info{position:absolute;right:16px;bottom:calc(80px + env(safe-area-inset-bottom,0px));width:min(340px,calc(100% - 32px));max-height:min(50dvh,380px);overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;background:var(--raise);border:1px solid var(--rule);border-radius:16px;box-shadow:var(--shadow);z-index:3}
@@ -271,7 +308,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .share{font-size:14px;line-height:1.5;white-space:pre-wrap;background:var(--land-out);padding:12px 14px;border-radius:10px;user-select:all;-webkit-user-select:all}
 
 @media (max-width:760px){
-  #home{display:block;overflow-y:auto;pointer-events:auto;padding:12px 12px calc(24px + env(safe-area-inset-bottom,0px))}
+  #home{display:flex;overflow:hidden;pointer-events:none;gap:14px;padding:12px 12px calc(12px + env(safe-area-inset-bottom,0px))}
   .h-top{flex-direction:column;gap:8px}
   .cartouche{width:100%;box-sizing:border-box;padding:13px 16px 12px}
   .mark{font-size:25px}
@@ -283,36 +320,43 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
   .goal .ring{width:24px;height:24px}
   .gear{width:44px;height:44px;padding:10px}
   .menu{width:min(280px,calc(100vw - 24px))}
-  .c-row small{display:none}
-  .h-bottom{margin-top:80px}
-  .qchips{order:2;flex-wrap:wrap;overflow:visible;gap:8px;margin-top:8px}
-  .chip{min-height:44px;padding:9px 12px;font-size:13px;white-space:normal}
-  .strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;overflow:visible;padding:0;gap:10px}
-  .rcard{min-width:0}
-  .rcard.active{grid-column:1/-1}
+  .h-bottom{margin-top:0;gap:8px}
+  .qchips{flex-wrap:nowrap;overflow-x:auto;gap:6px}
+  .chip{min-height:44px;padding:8px 11px;font-size:12px;white-space:nowrap;flex-shrink:0}
+  .strip{display:flex;align-items:stretch;overflow-x:auto;padding:2px 2px 8px;gap:8px;scroll-snap-type:x mandatory}
+  .rcard{min-width:0;flex:0 0 164px}
   .rmap{height:54px}
   #summary.side{left:12px;right:12px;top:auto;bottom:12px;width:auto;max-height:52%}
   .tabs button{padding:8px 10px;font-size:13px}
   .c-row{flex-wrap:wrap}
-  .rcard.active .rmap{height:64px}
-  .rcard.active .rbody{flex-direction:row;align-items:center}
-  .rcard.active .rmap{width:96px;flex-shrink:0}
-  .rbody{height:100%;gap:8px;padding:10px}
-  .rinfo{flex-wrap:wrap;align-items:flex-start}
+  .rcard.active .rmap{height:54px;width:100%}
+  .rbody{height:auto;flex:1;gap:8px;padding:10px}
+  .rinfo{flex-wrap:wrap;align-items:flex-start;min-height:62px}
   .rinfo b{font-size:14px}
-  .cta{margin:0 10px 10px;padding:10px 12px}
   #bar{top:calc(10px + env(safe-area-inset-top,0px));padding:10px 14px 12px}
   .q{flex-wrap:wrap;gap:8px}
   .score{width:100%;justify-content:flex-end}
-  #info{left:16px;right:16px;width:auto}
-  .zoom{flex-direction:row}
-  .zoom button{width:40px}
-  .zoom button+button{border-top:0;border-left:1px solid var(--rule)}
+  #info{left:16px;right:16px;width:auto;bottom:calc(108px + env(safe-area-inset-bottom,0px))}
+  #ctrls{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));gap:8px}
+  .map-dock{max-width:calc(100% - 160px);gap:6px}
+  #ctrls.exploring .map-dock{max-width:100%}
+  .zoom button{min-width:38px}
+  .region-heading{flex-wrap:wrap;gap:4px}
+  .region-nav{margin-left:auto}
+  #regionHint{display:none}
+  .r-action{font-size:12px;padding:10px 8px}
+  .map-help,.map-legend,#zfit span{display:none}
+  #zfit{padding:0;min-width:44px}
+  #zoomLevel{min-width:42px;font-size:11px}
+  .map-context{padding:6px 9px;font-size:11px}
+  .q .flag{font-size:28px;padding:7px;border-radius:10px}
   .pill{min-height:46px;padding:10px 14px}
   .pill kbd{display:none}
-  .region-heading span{max-width:100px;text-align:right}
+  .region-heading h2{font-size:14px}
+  .region-heading span{font-size:11px;text-align:right}
   .mark{font-size:28px}
 }
+@media (max-width:380px){#zoomLevel{display:none}.map-dock{max-width:calc(100% - 112px)}.q .name{font-size:24px}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -339,14 +383,15 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
             <button data-mode="run" aria-pressed="false">Map run</button>
             <button data-mode="explore" aria-pressed="false">Explore</button>
           </div>
-          <small id="modeNote"></small>
         </div>
+        <p id="modeNote"></p>
       </div>
       <div class="h-status">
         <div class="pillbox streak" id="streak"></div>
         <div class="pillbox goal" id="today"></div>
         <button class="pillbox gear" id="gearBtn" aria-label="Settings" aria-expanded="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
         <div class="menu" id="menu" hidden>
+          <div class="appearance"><b>Appearance</b><div class="tabs" id="themeChoices" role="group" aria-label="Color theme"><button data-theme="system" aria-pressed="true">System</button><button data-theme="light" aria-pressed="false">Light</button><button data-theme="dark" aria-pressed="false">Dark</button></div></div>
           <div class="legend">
             <span><svg viewBox="0 0 16 16"><rect width="16" height="16" fill="url(#hatch)"></rect></svg>Uncharted: not learned yet</span>
             <span><svg viewBox="0 0 16 16"><rect width="16" height="16" style="fill:color-mix(in oklab,var(--t1) 45%,var(--land))"></rect></svg>Charted: answered correctly at least once</span>
@@ -360,21 +405,22 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
     </div>
     <div class="h-bottom" id="homeBottom">
       <div class="qchips">
+        <button class="chip" id="reviewChip" hidden></button>
         <button class="chip trouble" id="trouble" hidden></button>
         <button class="chip" id="runChip"><svg viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></svg>Full map run</button>
         <button class="chip" id="teamBtn"><span class="dots"><i style="background:var(--ta)"></i><i style="background:var(--tb)"></i></span>Play with a friend</button>
         <button class="chip" id="chalBtn"></button>
       </div>
-      <div class="region-heading"><h2>Choose a region</h2><span id="regionHint"></span></div>
+      <div class="region-heading"><h2>Choose a region</h2><span id="regionHint"></span><div class="region-nav" aria-label="Browse regions"><button id="regionPrev" aria-label="Previous regions">Previous</button><button id="regionNext" aria-label="More regions">More regions</button></div></div>
       <div class="strip" id="regions"></div>
     </div>
   </section>
 
-  <header id="bar" hidden>
+  <header id="bar" hidden tabindex="-1" aria-label="Current country">
+    <div class="bar-nav"><span id="playMode"></span><select id="exploreRegion" aria-label="Explore region" hidden></select><button id="quit" aria-label="Back to regions">Regions</button></div>
     <div class="bar-top">
       <div class="segs" id="segs"></div>
       <span class="tick" id="tick"></span>
-      <button id="quit" aria-label="End session">End</button>
     </div>
     <div class="q">
       <span class="flag" id="pFlag"></span>
@@ -388,13 +434,19 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
   <aside id="info" hidden></aside>
 
   <div id="ctrls" hidden>
-    <div class="zoom">
-      <button id="zin" aria-label="Zoom in"><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg></button>
-      <button id="zout" aria-label="Zoom out"><svg viewBox="0 0 16 16"><path d="M3 8h10"/></svg></button>
-      <button id="zfit" aria-label="Fit region"><svg viewBox="0 0 16 16"><path d="M3 6V3h3M10 3h3v3M13 10v3h-3M6 13H3v-3"/></svg></button>
+    <div class="map-dock">
+      <div class="map-context"><span id="mapRegion"></span></div>
+      <div class="zoom" role="group" aria-label="Map controls">
+        <button id="zout" aria-label="Zoom out" title="Zoom out (−)"><svg viewBox="0 0 16 16"><path d="M3 8h10"/></svg></button>
+        <output id="zoomLevel" aria-label="Map zoom">100%</output>
+        <button id="zin" aria-label="Zoom in" title="Zoom in (+)"><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg></button>
+        <button id="zfit" aria-label="Fit region" title="Fit region (0)"><svg viewBox="0 0 16 16"><path d="M3 6V3h3M10 3h3v3M13 10v3h-3M6 13H3v-3"/></svg><span>Fit map</span></button>
+      </div>
+      <span class="map-help">Drag to move · Scroll or pinch to zoom</span>
     </div>
     <button id="showme" class="pill">Show me <kbd>Space</kbd></button>
   </div>
+  <div id="mapLegend" class="map-legend" hidden><span><i class="target"></i>Revealed</span><span><i></i>Found</span><span><i class="unseen"></i>Uncharted</span></div>
 
   <section id="setup" hidden aria-label="Team game setup"></section>
   <section id="summary" hidden aria-live="polite"></section>
@@ -429,12 +481,13 @@ const SEAS=[
 
 /* storage */
 const KEY='blank-atlas.v1';
-function blank(){return{cards:{find:{}},days:[],sound:true,chal:null,goal:{date:'',n:0},conf:{},best:{}}}
+function blank(){return{cards:{find:{}},days:[],sound:true,theme:'system',chal:null,goal:{date:'',n:0},conf:{},best:{}}}
 let S=blank();
 function restore(raw){
   const saved=JSON.parse(raw),s=blank();
   if(!saved||typeof saved!=='object')return s;
   s.sound=typeof saved.sound==='boolean'?saved.sound:true;
+  s.theme=['system','light','dark'].includes(saved.theme)?saved.theme:'system';
   s.days=Array.isArray(saved.days)?saved.days.filter(d=>typeof d==='string'):[];
   if(saved.goal&&typeof saved.goal.date==='string'&&Number.isFinite(saved.goal.n))s.goal={date:saved.goal.date,n:Math.max(0,saved.goal.n)};
   if(saved.chal&&typeof saved.chal.date==='string'&&Array.isArray(saved.chal.res)&&Number.isFinite(saved.chal.score)&&Number.isFinite(saved.chal.ms))s.chal=saved.chal;
@@ -453,6 +506,13 @@ function restore(raw){
 }
 try{const raw=localStorage.getItem(KEY);if(raw)S=restore(raw)}catch(e){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function applyTheme(){
+  if(S.theme==='system')delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme=S.theme;
+  document.querySelectorAll('#themeChoices button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.theme===S.theme)));
+}
+applyTheme();
+document.querySelectorAll('#themeChoices button').forEach(b=>b.onclick=()=>{S.theme=b.dataset.theme;applyTheme();save()});
 const card=id=>S.cards.find[id]||(S.cards.find[id]={b:0,due:0,n:0,c:0,w:0});
 const peek=id=>S.cards.find[id]||{b:0,due:0,n:0,c:0,w:0};
 const dkey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -492,12 +552,13 @@ const color={};
   const st=document.createElement('style');st.textContent=css;document.head.appendChild(st)}
 
 const svg=d3.select('#map'),zg=d3.select('#zg'),hatch=document.getElementById('hatch');
-let W=0,H=0,proj,path,curRegion=null,T=d3.zoomIdentity,markers=[],cameraTop=0;
+let W=0,H=0,proj,path,curRegion=null,T=d3.zoomIdentity,markers=[];
 const els=new Map();
 const landSel=d3.select('#lands').selectAll('path').data(features,d=>d.id).join('path')
   .attr('class',d=>'c'+(C.has(d.id)?' tc'+color[d.id]:'')).attr('data-id',d=>d.id);
 
-let mode='home',homeMode='find',sess=null;
+let mode='home',homeMode='find',sess=null,lastRegion=null;
+const regionScroll={};
 const $=id=>document.getElementById(id);
 
 function insets(){
@@ -510,16 +571,19 @@ function insets(){
     return[top,mobile?8:24,Math.max(24,H0-bt+6),mobile?8:24];
   }
   const top=($('bar').hidden?0:$('bar').getBoundingClientRect().bottom)+14;
-  return[top,16,mobile?72:80,16];
+  if(mode==='explore'&&!$('info').hidden){const info=$('info').getBoundingClientRect();return[top,mobile?16:Math.max(16,innerWidth-info.left+16),mobile?Math.max(110,innerHeight-info.top+16):140,16]}
+  return[top,16,mobile?110:140,16];
 }
 function boxGeo(b){const [x0,y0,x1,y1]=b,pts=[];for(let i=0;i<=12;i++){const x=x0+(x1-x0)*i/12,y=y0+(y1-y0)*i/12;pts.push([x,y0],[x,y1],[x0,y],[x1,y])}return{type:'MultiPoint',coordinates:pts}}
 function members(rid){return rid==='world'?DATA.countries.map(c=>c.id):DATA.countries.filter(c=>c.r===rid).map(c=>c.id)}
 
 function project(rid,animate){
+  svg.interrupt('camera').interrupt().style('opacity',1);
   const rect=svg.node().getBoundingClientRect();
   curRegion=rid;W=rect.width||innerWidth||1024;H=rect.height||innerHeight||768;
+  $('mapRegion').textContent=rid==='world'?'Whole world':REG[rid].name;
+  svg.attr('aria-label',`${rid==='world'?'World':REG[rid].name} map`);
   const [t,r,b,l]=insets();
-  cameraTop=t;
   const ext=[[l,t],[Math.max(l+60,W-r),Math.max(t+60,H-b)]];
   if(rid==='world')proj=d3.geoNaturalEarth1().rotate([-11,0]).fitExtent(ext,{type:'Sphere'});
   else{const [x0,y0,x1,y1]=REG[rid].box;proj=d3.geoAzimuthalEqualArea().rotate([-(x0+x1)/2,-(y0+y1)/2]).clipAngle(100).fitExtent(ext,boxGeo(REG[rid].box))}
@@ -545,7 +609,6 @@ function project(rid,animate){
   paint();
   if(sess?.kind==='team')for(const [id,team] of Object.entries(sess.owner))setCls(id,team?'tb':'ta',true);
   if(sess?.kind==='run')for(const [id,cls] of Object.entries(sess.mark))setCls(id,cls,true);
-  if(animate&&!RM)svg.style('opacity',.25).transition().duration(320).style('opacity',1);
 }
 
 function setCls(id,cls,on){for(const e of els.get(id)||[])e.classList.toggle(cls,on)}
@@ -560,36 +623,70 @@ svg.call(zoom).on('dblclick.zoom',null);
 
 function scaleDeps(){
   const k=T.k;
+  $('zoomLevel').textContent=Math.round(k*100)+'%';
+  $('zout').disabled=k<=1.001;
+  $('zin').disabled=k>=79.999;
   svg.node().style.setProperty('--sk',(4/k)+'px');
   hatch.setAttribute('patternTransform',`scale(${1/k}) rotate(45)`);
   d3.select('#marks').selectAll('.mk').attr('r',(COARSE?7:5.5)/k);
   d3.select('#marks').selectAll('.hit').attr('r',(COARSE?20:12)/k);
-  d3.select('#labels').selectAll('text').attr('font-size',11/k).attr('stroke-width',3/k);
+  d3.select('#labels').selectAll('g.country-label').attr('transform',d=>`translate(${d.x},${d.y}) scale(${1/k}) translate(${d.dx},${d.dy})`);
   d3.select('#fx').selectAll('text').attr('font-size',function(){return(+this.dataset.fs||15)/k}).attr('stroke-width',4/k);
   d3.select('#seas').selectAll('text').attr('font-size',d=>(d.big?14:10.5)/k).attr('opacity',d=>d.big?(k<3?1:0):(k<6?1:0));
 }
 
 /* labels */
 let labelIds=[];
+const revealedIds=new Set();
 function setLabels(ids){labelIds=ids;refreshLabels()}
 function refreshLabels(){
+  if(!proj)return;
   const data=[];
-  for(const id of labelIds){
+  const [top,right,bottom,left]=insets();
+  const active=mode==='play'&&sess?step()?.id:null;
+  const ids=[...new Set([...revealedIds].reverse().concat(labelIds))];
+  const infoRect=!$('info').hidden?$('info').getBoundingClientRect():null;
+  for(const id of ids){
+    if(id===active&&(sess.phase==='ask'||sess.phase==='teach'||sess.phase==='reveal'))continue;
+    if($('fx').querySelector(`[data-id="${id}"]`))continue;
     const m=MAIN.get(id),p=proj(GC.get(id));if(!p||!isFinite(p[0]))continue;
-    const nm=nameOf(id),isMk=markers.some(x=>x.id===id);let show=true,dy=0;
-    if(isMk){show=T.k>=2.5;dy=-12}else if(m){const [[x0],[x1]]=path.bounds(m);show=(x1-x0)*T.k>nm.length*6.4}
-    if(show)data.push({id,x:p[0],y:p[1],dy,nm});
+    const nm=nameOf(id),isMk=markers.some(x=>x.id===id),known=revealedIds.has(id);
+    const width=Math.max(52,nm.length*6.8+(C.has(id)?38:20));
+    if(!known){
+      if(isMk&&T.k<2.5)continue;
+      if(!isMk&&m){const [[x0],[x1]]=path.bounds(m);if((x1-x0)*T.k<width)continue}
+    }
+    const [sx,sy]=T.apply(p);
+    if(sx<left||sx>W-right||sy<top||sy>H-bottom)continue;
+    const offsets=isMk?[[0,-24],[0,24],[width/2+12,0],[-width/2-12,0]]:[[0,0],[0,-28],[0,28],[width/2+12,0],[-width/2-12,0]];
+    for(const [dx,dy] of offsets){
+      const box={l:sx+dx-width/2,r:sx+dx+width/2,t:sy+dy-13,b:sy+dy+13};
+      if(box.l<left||box.r>W-right||box.t<top||box.b>H-bottom)continue;
+      if(infoRect&&box.l<infoRect.right&&box.r>infoRect.left&&box.t<infoRect.bottom&&box.b>infoRect.top)continue;
+      if(data.some(d=>box.l<d.box.r+5&&box.r>d.box.l-5&&box.t<d.box.b+5&&box.b>d.box.t-5))continue;
+      data.push({id,x:p[0],y:p[1],dx,dy,width,box,nm:(C.get(id)?.flag?C.get(id).flag+' ':'')+nm});
+      break;
+    }
   }
-  d3.select('#labels').selectAll('text').data(data,d=>d.id).join('text').attr('class','lbl').attr('x',d=>d.x).attr('y',d=>d.y+d.dy/T.k).text(d=>d.nm);
+  const labels=d3.select('#labels').selectAll('g.country-label').data(data,d=>d.id).join(enter=>{
+    const g=enter.append('g').attr('class','country-label');
+    g.append('line');g.append('rect').attr('height',26).attr('y',-13).attr('rx',8);g.append('text').attr('class','lbl');
+    return g;
+  }).attr('data-id',d=>d.id);
+  labels.select('line').attr('x1',d=>-d.dx).attr('y1',d=>-d.dy).attr('x2',0).attr('y2',0);
+  labels.select('rect').attr('x',d=>-d.width/2).attr('width',d=>d.width);
+  labels.select('text').text(d=>d.nm);
   scaleDeps();
 }
 function fxLabel(id,text,cls){
   const p=proj(GC.get(id));if(!p)return;
+  if(C.has(id))revealedIds.add(id);
+  if(cls==='rise'){refreshLabels();return}
   const isMk=markers.some(x=>x.id===id);
-  d3.select('#fx').append('text').attr('class','fx '+(cls||'')).attr('data-fs',15).attr('x',p[0]).attr('y',p[1]+(isMk?-15:0)/T.k).text(text);
-  scaleDeps();
+  d3.select('#fx').append('text').attr('class','fx '+(cls||'')).attr('data-id',id).attr('data-fs',15).attr('x',p[0]).attr('y',p[1]+(isMk?-15:0)/T.k).text((C.get(id)?.flag?C.get(id).flag+' ':'')+text);
+  refreshLabels();
 }
-const clearFx=()=>d3.select('#fx').selectAll('*').remove();
+const clearFx=()=>{d3.select('#fx').selectAll('*').remove();refreshLabels()};
 function ripple(ev,bad){
   if(RM||!ev)return;
   const r=document.createElement('div');r.className='ripple'+(bad?' bad':'');r.style.left=ev[0]+'px';r.style.top=ev[1]+'px';
@@ -617,11 +714,12 @@ function ensureVisible(ids,minPx){
   k=Math.max(1,k);
   const cx=(x0+x1)/2,cy=(y0+y1)/2;
   const tr=d3.zoomIdentity.translate(l+aw/2-cx*k,t+ah/2-cy*k).scale(k);
-  (RM?svg:svg.transition().duration(650).ease(d3.easeCubicInOut)).call(zoom.transform,tr);
+  camera(320).call(zoom.transform,tr);
 }
-$('zin').onclick=()=>svg.transition().duration(250).call(zoom.scaleBy,1.6);
-$('zout').onclick=()=>svg.transition().duration(250).call(zoom.scaleBy,1/1.6);
-$('zfit').onclick=()=>svg.transition().duration(400).call(zoom.transform,d3.zoomIdentity);
+const camera=duration=>{svg.interrupt('camera');return RM?svg:svg.transition('camera').duration(duration).ease(d3.easeCubicOut)};
+$('zin').onclick=()=>camera(250).call(zoom.scaleBy,1.6);
+$('zout').onclick=()=>camera(250).call(zoom.scaleBy,1/1.6);
+$('zfit').onclick=()=>camera(280).call(zoom.transform,d3.zoomIdentity);
 
 /* picking */
 svg.on('click',e=>{
@@ -691,43 +789,39 @@ function renderHome(){
   $('streak').title=`${st}-day streak`;
   $('today').innerHTML=`<span class="ring">${ring(Math.min(g,GOAL),Math.min(g,GOAL),GOAL,30,4)}</span><div><span>${Math.min(g,GOAL)} of ${GOAL}</span><small>${g>=GOAL?'goal reached':'today'}</small></div>`;
   $('today').title='Daily goal: right answers today';
-  $('charted').innerHTML=w.charted?`<b>${w.charted}</b> of 197 countries charted, ${w.mast} mastered`:'197 countries waiting to be charted';
+  $('charted').innerHTML=w.charted?`<b>${w.charted}</b> of ${w.total} countries charted, ${w.mast} mastered`:`${w.total} countries waiting to be charted`;
+  $('ticks').setAttribute('viewBox',`0 0 ${w.total*3} 8`);
   const order=DATA.countries.map(c=>peek(c.id)).map(k=>k.b>=3?2:k.c>0?1:0).sort((a,b)=>b-a);
   $('ticks').innerHTML=order.map((v,i)=>`<rect x="${i*3}" y="0" width="2" height="8"${v===2?' class="ms"':v===1?' class="ch"':''}/>`).join('');
-  document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===homeMode));
-  $('modeNote').textContent=homeMode==='explore'?'Tap a region to browse':homeMode==='run'?'Every country, one go':'Tap a region to play';
-  const due=dueIds(),rec=recommended(),regs=homeMode==='run'?[...REGIONS,{id:'world',name:'Whole world'}]:[rec,...REGIONS.filter(r=>r!==rec)];
-  $('regionHint').textContent=innerWidth<=760?'Scroll for more':'Scroll sideways to choose a region';
+  document.querySelectorAll('.tabs button[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===homeMode));
+  $('modeNote').textContent=homeMode==='explore'?'Browse freely. Select a country to see its flag, capital and neighbours.':homeMode==='run'?'Find every country in a region. You have three tries for each.':'Learn a few countries at a time, then find them on the map.';
+  const due=dueIds(),rec=recommended(),regs=homeMode==='find'?REGIONS:[...REGIONS,{id:'world',name:'Whole world'}];
+  $('reviewChip').hidden=homeMode!=='find'||!due.length;
+  $('reviewChip').textContent=`Review ${due.length} due today`;
+  $('reviewChip').onclick=()=>startSession({kind:'review'});
+  $('regionHint').textContent=innerWidth<=760?'Swipe to choose a region':'Scroll sideways to choose a region';
   const box=$('regions');box.innerHTML='';
   for(const r of regs){
     const s=regionStats(r.id),active=r===rec&&homeMode==='find';
     const card=document.createElement('div');card.className='rcard'+(active?' active':'');
     const best=S.best[r.id];
     const line=homeMode==='run'?(best?`${s.total} countries, best ${fmtTime(best.ms)}`:`${s.total} countries`):s.charted===0?`${s.total} countries`:s.mast===s.total?'All mastered':`${s.charted} of ${s.total} charted`;
-    const badge=homeMode==='run'?(best?`<span class="rbadge${best.pct===100?' done':''}">Best ${best.pct}%</span>`:''):homeMode==='find'?(s.due?`<span class="rbadge">${s.due} to review</span>`:s.mast===s.total?`<span class="rbadge done">Done</span>`:''):'';
-    card.innerHTML=`<button class="rbody">${miniMap(r.id)}<span class="rinfo"><span><b></b><small>${line}</small></span>${badge}</span></button>`;
+    const badge=active?'<span class="rbadge">Suggested</span>':homeMode==='run'?(best?`<span class="rbadge${best.pct===100?' done':''}">Best ${best.pct}%</span>`:''):homeMode==='find'?(s.due?`<span class="rbadge">${s.due} to review</span>`:s.mast===s.total?`<span class="rbadge done">Done</span>`:''):'';
+    const action=homeMode==='explore'?'Explore map':homeMode==='run'?'Start map run':s.charted?'Continue learning':'Start learning';
+    card.innerHTML=`<button class="rbody" data-region="${r.id}">${miniMap(r.id)}<span class="rinfo"><span><b></b><small>${line}</small></span>${badge}</span><span class="r-action">${action} →</span></button>`;
     card.querySelector('b').textContent=r.name;
     const body=card.querySelector('.rbody');
-    body.setAttribute('aria-label',`${r.name}: ${line}`);
-    body.onclick=()=>homeMode==='explore'?startExplore(r.id):homeMode==='run'?startRun(r.id):startSession({kind:'learn',region:r.id});
+    body.setAttribute('aria-label',`${action} in ${r.name}: ${line}`);
+    body.onclick=()=>{lastRegion=r.id;regionScroll[homeMode]=box.scrollLeft;if(homeMode==='explore')startExplore(r.id);else if(homeMode==='run')startRun(r.id);else startSession({kind:'learn',region:r.id})};
     card.onmouseenter=()=>hlRegion(r.id);card.onmouseleave=()=>hlRegion(null);
     body.onfocus=()=>hlRegion(r.id);body.onblur=()=>hlRegion(null);
-    if(active){
-      const cta=document.createElement('button');cta.className='cta';cta.id='cta';
-      if(due.length){
-        cta.innerHTML=`<span><b>Review ${due.length} ${due.length===1?'country':'countries'}</b><small>Due today. About ${Math.max(1,Math.round(Math.min(due.length,25)*7/60))} min.</small></span><span class="go">Start</span>`;
-        cta.onclick=()=>startSession({kind:'review'});
-      }else{
-        const all=s.charted===s.total;
-        cta.innerHTML=`<span><b>${all?'Practise':s.charted?'Continue':'Start'} ${esc(r.name)}</b><small>${all?`${s.mast} of ${s.total} mastered`:s.charted?`${s.total-s.charted} left to chart`:'About 3 min'}</small></span><span class="go">${s.charted&&!all?'Continue':'Start'}</span>`;
-        cta.onclick=()=>startSession({kind:'learn',region:r.id});
-      }
-      card.appendChild(cta);
-    }
     box.appendChild(card);
   }
-  box.scrollLeft=0;
-  const fade=()=>box.classList.toggle('end',box.scrollLeft+box.clientWidth>=box.scrollWidth-4);box.onscroll=fade;fade();
+  box.scrollLeft=regionScroll[homeMode]||0;
+  const update=()=>{regionScroll[homeMode]=box.scrollLeft;$('regionPrev').disabled=box.scrollLeft<4;$('regionNext').disabled=box.scrollLeft+box.clientWidth>=box.scrollWidth-4};
+  box.onscroll=update;update();
+  const browse=direction=>{const left=Math.max(0,Math.min(box.scrollWidth-box.clientWidth,box.scrollLeft+direction*Math.max(172,box.clientWidth*.75)));box.scrollTo({left,behavior:RM?'instant':'smooth'})};
+  $('regionPrev').onclick=()=>browse(-1);$('regionNext').onclick=()=>browse(1);
   const tr=troubleIds(),tb=$('trouble');
   tb.hidden=tr.length<2;
   if(tr.length>=2){
@@ -741,17 +835,17 @@ function renderHome(){
   ch.onclick=startChallenge;
   $('teamBtn').onclick=openTeamSetup;
   $('runChip').hidden=homeMode==='run';
-  $('runChip').onclick=()=>{homeMode='run';renderHome()};
+  $('runChip').onclick=()=>{regionScroll[homeMode]=$('regions').scrollLeft;homeMode='run';renderHome();project('world')};
   $('soundBtn').innerHTML=`<span>Sound</span><span>${S.sound?'On':'Off'}</span>`;
 }
 function hlRegion(rid){const set=rid?new Set(members(rid)):null;for(const c of DATA.countries)setCls(c.id,'hlr',!!set&&set.has(c.id))}
-document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{homeMode=b.dataset.mode;renderHome()});
+document.querySelectorAll('.tabs button[data-mode]').forEach(b=>b.onclick=()=>{regionScroll[homeMode]=$('regions').scrollLeft;homeMode=b.dataset.mode;renderHome();project('world')});
 $('soundBtn').onclick=()=>{S.sound=!S.sound;save();renderHome();if(S.sound)sOk()};
 function resetFoot(){
   $('resetWrap').innerHTML='<button class="opt" id="resetBtn"><span>Reset progress</span><span>…</span></button>';
   $('resetBtn').onclick=()=>{
     $('resetWrap').innerHTML='<p class="note" style="margin:6px 0">Erase all progress in this browser?</p><div class="row"><button class="btn danger" id="rYes">Erase</button><button class="btn" id="rNo">Keep</button></div>';
-    $('rYes').onclick=()=>{S=blank();save();resetFoot();paint();renderHome()};
+    $('rYes').onclick=()=>{const theme=S.theme;S=blank();S.theme=theme;save();resetFoot();paint();renderHome()};
     $('rNo').onclick=resetFoot;
   };
 }
@@ -761,13 +855,16 @@ $('gearBtn').onclick=e=>{e.stopPropagation();const open=$('menu').hidden;$('menu
 document.addEventListener('click',e=>{if(!$('menu').hidden&&!e.composedPath().includes($('menu'))&&!e.composedPath().includes($('gearBtn')))closeMenu()});
 
 function show(m){
+  svg.interrupt('camera').interrupt();
   mode=m;
+  if(m!=='summary'){revealedIds.clear();labelIds=[];d3.select('#labels').selectAll('*').remove()}
   $('home').hidden=m!=='home';
   closeMenu();
   $('summary').classList.remove('side');
   $('combo').className='combo';
   $('bar').hidden=!(m==='play'||m==='explore');
   $('ctrls').hidden=!(m==='play'||m==='explore');
+  $('mapLegend').hidden=m!=='play';
   $('summary').hidden=m!=='summary';
   $('setup').hidden=m!=='setup';
   $('score').hidden=true;
@@ -776,12 +873,27 @@ function show(m){
   $('showme').hidden=m!=='play';
   $('segs').hidden=m!=='play';
   $('combo').hidden=true;
-  $('quit').textContent=m==='explore'?'Back':'End';
-  $('quit').setAttribute('aria-label',m==='explore'?'Back to regions':'End session');
+  $('quit').textContent=m==='play'?(sess?.kind==='challenge'?'Leave challenge':'Finish round'):'Regions';
+  $('quit').setAttribute('aria-label',m==='play'?$('quit').textContent:'Back to regions');
+  $('exploreRegion').hidden=m!=='explore';
+  $('playMode').hidden=m==='explore';
+  $('playMode').textContent=sess?.kind==='run'?'Map run':sess?.kind==='challenge'?'Daily challenge':sess?.kind==='team'?'Play with a friend':sess?.kind==='review'?'Review':sess?.kind==='trouble'?'Practice':'Learn';
+  $('ctrls').classList.toggle('exploring',m==='explore');
+  $('showme').classList.remove('next');
   document.querySelectorAll('.hlr').forEach(e=>e.classList.remove('hlr'));
   svg.classed('quiz',m==='play').classed('home',m==='home'||m==='summary'||m==='setup');
 }
-function goHome(){document.querySelectorAll('.ta,.tb,.r1,.r2,.r3,.rx').forEach(e=>e.classList.remove('ta','tb','r1','r2','r3','rx'));$('summary').classList.remove('side');sess=null;clearFx();setLabels([]);clearTransient();show('home');renderHome();project('world',true)}
+function goHome(){
+  document.querySelectorAll('.ta,.tb,.r1,.r2,.r3,.rx').forEach(e=>e.classList.remove('ta','tb','r1','r2','r3','rx'));
+  $('summary').classList.remove('side');sess=null;clearFx();setLabels([]);clearTransient();show('home');renderHome();project('world',true);
+  const origin=document.querySelector(`.rbody[data-region="${lastRegion}"]`);
+  if(origin){
+    const card=origin.getBoundingClientRect(),rail=$('regions').getBoundingClientRect();
+    if(card.left<rail.left)$('regions').scrollLeft+=card.left-rail.left;
+    else if(card.right>rail.right)$('regions').scrollLeft+=card.right-rail.right;
+    origin.focus({preventScroll:true});
+  }else document.querySelector('.tabs button[data-mode][aria-pressed="true"]').focus({preventScroll:true});
+}
 
 /* sessions */
 function shuffle(a,rnd=Math.random){for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -851,7 +963,7 @@ function openTeamSetup(){
     <p class="kick" style="margin:0;font-weight:500">Blue and Gold take turns. Find the country to claim it: 3 points, or 1 point if you tap a country next door. Most points wins.</p>
     <div class="opts"><p>Map</p><div class="choice" id="cReg">${regs.map(r=>`<button data-v="${r.id}" aria-pressed="${r.id===cfg.region}">${esc(r.name)}</button>`).join('')}</div></div>
     <div class="opts"><p>Turns per team</p><div class="choice" id="cRnd">${[3,5,8,10].map(n=>`<button data-v="${n}" aria-pressed="${n===cfg.rounds}">${n}</button>`).join('')}</div></div>
-    <div class="row"><button class="btn primary" id="teamGo">Start game</button><button class="btn" id="teamBack">Back</button></div>`;
+    <div class="row"><button class="btn primary" id="teamGo">Start game</button><button class="btn" id="teamBack">Back to regions</button></div>`;
   $('cReg').querySelectorAll('button').forEach(b=>b.onclick=()=>{cfg.region=b.dataset.v;save();$('cReg').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));project(cfg.region,true);fitRounds()});
   $('cRnd').querySelectorAll('button').forEach(b=>b.onclick=()=>{cfg.rounds=+b.dataset.v;save();$('cRnd').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b))});
   function fitRounds(){const max=Math.floor(members(cfg.region).length/2);$('cRnd').querySelectorAll('button').forEach(x=>{x.disabled=+x.dataset.v>max;x.style.opacity=x.disabled?.35:1});if(cfg.rounds>max){cfg.rounds=[3,5,8,10].filter(n=>n<=max).pop();$('cRnd').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',+x.dataset.v===cfg.rounds))}}
@@ -879,7 +991,7 @@ function teamFinish(){
       <div class="b${b>a?' win':''}"><span>Gold</span><b>${b}</b><small>${claimed[1].length} ${claimed[1].length===1?'country':'countries'} claimed</small></div>
     </div>
     ${s.items.some(id=>s.owner[id]===undefined)?`<div class="newly"><p>Nobody found these</p><div class="flags">${s.items.filter(id=>s.res[id]!==undefined&&s.owner[id]===undefined).map(id=>`<span>${C.get(id).flag} ${esc(C.get(id).name)}</span>`).join('')}</div></div>`:''}
-    <div class="row"><button class="btn primary" id="rematch">Rematch</button><button class="btn" id="tSet">Change settings</button><button class="btn" id="doneBtn">Done</button></div>`;
+    <div class="row"><button class="btn primary" id="rematch">Rematch</button><button class="btn" id="tSet">Change settings</button><button class="btn" id="doneBtn">Back to regions</button></div>`;
   $('rematch').onclick=()=>startTeam(s.region,s.rounds);
   $('tSet').onclick=openTeamSetup;
   $('doneBtn').onclick=goHome;
@@ -903,7 +1015,7 @@ function runReveal(t,msg){
   grade(t,false);sess.phase='reveal';sBad();
   setCls(t,'reveal',true);fxLabel(t,C.get(t).name,'t');
   ensureVisible([t],markers.some(m=>m.id===t)?70:0);
-  $('pMsg').innerHTML=msg;$('showme').innerHTML='Skip <kbd>Space</kbd>';renderSegs();
+  $('pMsg').innerHTML=msg;$('showme').innerHTML='Next country <kbd>Space</kbd>';$('showme').classList.add('next');renderSegs();
 }
 function runPick(id,pt){
   const t=step().id;
@@ -929,6 +1041,7 @@ function runPick(id,pt){
   else{sBad();$('pMsg').innerHTML=`<span class="bad">That's ${esc(nameOf(id))}${near?', right next door':''}.</span> ${3-a} ${3-a===1?'try':'tries'} left.`}
 }
 function runFinish(){
+  if(sess.phase==='reveal')runMark(step().id,'rx');
   const s=sess;sess=null;
   clearTransient();clearFx();setLabels([]);
   const ms=Date.now()-s.t0,ids=s.items.filter(id=>s.mark[id]);
@@ -959,7 +1072,7 @@ function runFinish(){
       <div><b>${ids.length}/${total}</b><small>countries placed</small></div>
     </div>
     ${missed.length?`<div class="newly"><p>Worth another look</p><div class="flags">${missed.slice(0,24).map(id=>`<span>${C.get(id).flag} ${esc(C.get(id).name)}</span>`).join('')}${missed.length>24?`<span>and ${missed.length-24} more</span>`:''}</div></div>`:''}
-    <div class="row"><button class="btn primary" id="againBtn">Run it again</button><button class="btn" id="doneBtn">Done</button></div>`;
+    <div class="row"><button class="btn primary" id="againBtn">Run it again</button><button class="btn" id="doneBtn">Back to regions</button></div>`;
   $('againBtn').onclick=()=>{$('summary').classList.remove('side');startRun(s.region)};
   $('doneBtn').onclick=()=>{homeMode='run';goHome()};
   if(complete&&pct>=80)tone([523,659,784,1047],.08);
@@ -1022,16 +1135,17 @@ function ask(reset=false){
   if(s.teach){
     kk.textContent='New country';kk.className='kicker new';
     $('pMsg').innerHTML=`This is <b>${esc(c.name)}</b>. Study its location, then continue.`;
-    $('showme').innerHTML='Continue <kbd>Space</kbd>';
+    $('showme').innerHTML='Continue <kbd>Space</kbd>';$('showme').classList.add('next');
   }else{
     kk.textContent=sess.kind==='review'?`Review in ${REG[region].name}`:sess.kind==='trouble'?`Trouble spot in ${REG[region].name}`:kicker();
     kk.className='kicker'+(sess.kind==='team'?(s.team?' kb':' ka'):'');
     if(sess.kind==='team'){$('bar').classList.toggle('turn-a',s.team===0);$('bar').classList.toggle('turn-b',s.team===1)}
-    $('showme').innerHTML='Show me <kbd>Space</kbd>';
+    $('showme').innerHTML='Reveal location <kbd>Space</kbd>';$('showme').classList.remove('next');
     $('pMsg').textContent='Tap the country on the map. Drag to move; use + and − to zoom.';
   }
   renderSegs();
-  if(reset||curRegion!==region||Math.abs(cameraTop-insets()[0])>1)project(region,true);
+  if(reset||curRegion!==region)project(region,true);
+  $('bar').focus({preventScroll:true});
   if(s.teach){
     setCls(id,'tgt',true);
     const nbs=c.nb.filter(n=>members(curRegion).includes(n));
@@ -1072,7 +1186,11 @@ function requeue(id){
   if(sess.retries[id]<=2)insertLater(id,3);
 }
 function advance(){
+  $('showme').classList.add('next');
+  if(sess.phase==='reveal')$('pMsg').innerHTML=`This is <b>${esc(C.get(step().id).name)}</b>. Take a moment to remember its location.`;
   sess.phase='feedback';
+  clearFx();
+  revealedIds.add(step().id);refreshLabels();
   $('showme').hidden=false;
   $('showme').innerHTML=(sess.pos+1>=sess.queue.length?'See results':'Next country')+' <kbd>Space</kbd>';
 }
@@ -1140,7 +1258,7 @@ function miss(t,picked,pt){
   }else $('pMsg').innerHTML=`Here it is. Tap <b>${tn}</b> to continue.`;
   setCls(t,'reveal',true);fxLabel(t,C.get(t).name,'t');
   ensureVisible(picked&&C.has(picked)?[t,picked]:[t],markers.some(m=>m.id===t)?70:0);
-  $('showme').innerHTML='Skip <kbd>Space</kbd>';
+  $('showme').innerHTML='Next country <kbd>Space</kbd>';$('showme').classList.add('next');
   renderCombo(false);renderSegs();
 }
 $('showme').onclick=()=>skip();
@@ -1157,11 +1275,15 @@ function skip(){
 }
 $('quit').onclick=()=>{if(mode==='play'&&sess&&Object.keys(sess.res).length>0&&sess.kind!=='challenge')finish();else goHome()};
 addEventListener('keydown',e=>{
+  if((mode==='play'||mode==='explore')&&!e.target.closest?.('input,textarea,select,[contenteditable="true"]')){
+    const control=e.key==='+'||e.key==='='?'zin':e.key==='-'?'zout':e.key==='0'?'zfit':null;
+    if(control){e.preventDefault();$(control).click();return}
+  }
   if(e.key==='Escape'&&!$('menu').hidden){closeMenu();$('gearBtn').focus();return}
   if(e.key==='Escape'&&!$('info').hidden){e.preventDefault();closeInfo();return}
   if(e.key==='Escape'&&mode==='setup'){e.preventDefault();goHome();return}
   if(e.key==='Escape'&&mode!=='home'){e.preventDefault();$('quit').click();return}
-  if(e.key===' '&&mode==='play'&&!e.repeat&&!e.target.closest('button,input,textarea,select,a')){e.preventDefault();skip()}
+  if(e.key===' '&&mode==='play'&&!e.repeat&&!e.target.closest?.('button,input,textarea,select,a')){e.preventDefault();skip()}
 });
 
 /* finish */
@@ -1202,7 +1324,7 @@ function finish(){
     ${shareTxt?`<div class="share" id="shareTxt">${esc(shareTxt)}</div>`:''}
     <div class="row">
       ${s.kind==='challenge'?'<button class="btn primary" id="copyBtn">Copy result</button>':'<button class="btn primary" id="againBtn">Keep going</button>'}
-      <button class="btn" id="doneBtn">Done</button>
+      <button class="btn" id="doneBtn">Back to regions</button>
     </div>`;
   $('doneBtn').onclick=goHome;
   if($('againBtn'))$('againBtn').onclick=()=>{
@@ -1221,15 +1343,24 @@ function finish(){
 
 /* explore */
 function startExplore(rid){
+  lastRegion=rid;
   sess=null;clearFx();clearTransient();show('explore');
-  $('pKick').textContent=`Exploring ${REG[rid].name}`;$('pKick').className='kicker';
-  $('pFlag').textContent='';$('pName').textContent='Tap any country';
-  $('pMsg').textContent='Zoom in to see more names.';$('tick').textContent='';
+  exploredId=null;
+  $('exploreRegion').value=rid;
+  explorePrompt();$('tick').textContent='';
   project(rid,true);
   setLabels(members(rid));
+  $('bar').focus({preventScroll:true});
 }
 let exploredId=null;
-function closeInfo(){exploredId=null;$('info').hidden=true;clearTransient()}
+$('exploreRegion').innerHTML=[{id:'world',name:'Whole world'},...REGIONS].map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('');
+$('exploreRegion').onchange=()=>{startExplore($('exploreRegion').value);$('exploreRegion').focus({preventScroll:true})};
+function explorePrompt(){
+  $('pKick').textContent='Explore · No timer or score';$('pKick').className='kicker';
+  $('pFlag').textContent='';$('pName').textContent='Choose a country';
+  $('pMsg').textContent='Tap the map for a flag, capital and neighbouring countries.';
+}
+function closeInfo(){exploredId=null;$('info').hidden=true;clearTransient();explorePrompt();refreshLabels()}
 function showInfo(id){
   clearTransient();
   exploredId=id;
@@ -1237,6 +1368,7 @@ function showInfo(id){
   const header='<div class="info-heading"><h2></h2><button class="info-close" aria-label="Close country details">Close</button></div>';
   if(!c){box.innerHTML=header+`<p class="sub" style="margin:0">A territory rather than a country, so it isn't in the quiz.</p>`;box.querySelector('h2').textContent=nameOf(id);box.querySelector('.info-close').onclick=closeInfo;return}
   setCls(id,'tgt',true);
+  revealedIds.add(id);
   const k=peek(id);
   box.innerHTML=header+`
     <dl><dt>Capital</dt><dd class="cap"></dd><dt>Region</dt><dd>${esc(REG[c.r].name)}</dd><dt>Your map</dt><dd>${k.b>=3?'Mastered':k.c>0?'Charted':'Uncharted'}</dd></dl>
@@ -1244,13 +1376,20 @@ function showInfo(id){
   box.querySelector('h2').textContent=c.flag+' '+c.name;
   box.querySelector('.info-close').onclick=closeInfo;
   box.querySelector('.cap').textContent=c.cap||'None';
-  box.querySelectorAll('.chips button').forEach(b=>b.onclick=()=>{const n=b.dataset.n;if(C.get(n).r!==curRegion){project(C.get(n).r,true);setLabels(members(curRegion));$('pKick').textContent=`Exploring ${REG[curRegion].name}`}showInfo(n);ensureVisible([n])});
+  $('pFlag').textContent=c.flag;$('pName').textContent=c.name;
+  $('pMsg').textContent='Country selected. Tap another country or follow a neighbour below.';
+  box.querySelectorAll('.chips button').forEach(b=>b.onclick=()=>{const n=b.dataset.n;if(curRegion!=='world'&&C.get(n).r!==curRegion){$('info').hidden=true;project(C.get(n).r,true);$('exploreRegion').value=curRegion;lastRegion=curRegion;setLabels(members(curRegion))}showInfo(n)});
+  ensureVisible([id],24);
+  refreshLabels();
 }
 
 let rz;
 addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{
+  const keep=mode==='play'||mode==='explore',k=T.k;
+  const center=keep&&proj?proj.invert(T.invert([W/2,H/2])):null;
   if(mode==='home')renderHome();
   project(curRegion||'world');refreshLabels();
+  if(center&&center.every(Number.isFinite)){const p=proj(center);if(p&&p.every(Number.isFinite))svg.call(zoom.transform,d3.zoomIdentity.translate(W/2-p[0]*k,H/2-p[1]*k).scale(k))}
   if(mode==='play'&&sess){
     const id=step().id;
     if(sess.phase==='teach'||sess.phase==='reveal'){

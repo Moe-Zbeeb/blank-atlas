@@ -8,11 +8,11 @@ const root=path.resolve(__dirname,'..');
 const source=fs.readFileSync(path.join(root,'src.html'),'utf8').replace('__DATA__',()=>fs.readFileSync(path.join(root,'data.json'),'utf8'));
 const script=source.match(/<script>([\s\S]*?)<\/script>/)[1];
 
-function game(t,saved){
+function game(t,saved,reducedMotion=true){
   const dom=new JSDOM(source,{url:'https://example.com/blank-atlas/',runScripts:'outside-only',pretendToBeVisual:true});
   const w=dom.window;
   t.after(()=>w.close());
-  w.matchMedia=query=>({matches:query.includes('reduced-motion')});
+  w.matchMedia=query=>({matches:reducedMotion&&query.includes('reduced-motion')});
   w.SVGElement.prototype.getBoundingClientRect=function(){return{left:0,top:0,right:1000,bottom:700,width:1000,height:700}};
   w.SVGElement.prototype.getBBox=function(){return{x:0,y:0,width:100,height:100}};
   Object.defineProperties(w.SVGElement.prototype,{
@@ -210,4 +210,219 @@ test('skipping a map run reveal records the missed country before advancing',t=>
   api.skip();
   assert.equal(api.session.mark[id],'rx');
   assert.equal(api.session.pos,1);
+});
+
+test('Palestine is one selectable shape covering both former map entries',t=>{
+  const {api,w,el}=game(t);
+  const data=JSON.parse(fs.readFileSync(path.join(root,'data.json'),'utf8'));
+  const geometries=data.topo.objects.countries.geometries;
+  assert.equal(api.C.has('IL'),false);
+  assert.equal(geometries.some(g=>g.id==='IL'),false);
+  assert.equal(geometries.filter(g=>g.id==='PS').length,1);
+  const palestine=w.topojson.feature(data.topo,geometries.find(g=>g.id==='PS'));
+  for(const point of [[34.78,32.08],[35.20,31.90],[34.46,31.50],[34.80,30.60]])assert.ok(w.d3.geoContains(palestine,point),String(point));
+  assert.equal(api.members('world').length,196);
+  assert.equal(api.members('mideast').length,23);
+  assert.match(el('charted').textContent,/196 countries/);
+  assert.equal(api.C.get('PS').flag,'🇵🇸');
+  assert.deepEqual([...api.C.get('PS').nb].sort(),['EG','JO','LB','SY']);
+  for(const c of api.C.values()){
+    assert.equal(c.nb.includes('IL'),false);
+    assert.equal(c.nb.includes(c.id),false);
+    assert.equal(new Set(c.nb).size,c.nb.length);
+  }
+});
+
+test('saved progress for removed countries cannot reintroduce them into quizzes',t=>{
+  const {api}=game(t,{cards:{find:{IL:{b:3,n:3,c:3,w:0,due:0},PS:{b:2,n:2,c:2,w:0,due:0}}},conf:{PS:{IL:2,JO:1}}});
+  assert.equal(api.state.cards.find.IL,undefined);
+  assert.equal(api.state.cards.find.PS.b,2);
+  assert.equal(api.state.conf.PS.IL,undefined);
+  api.startRun('mideast');
+  assert.equal(api.session.items.includes('IL'),false);
+  assert.equal(api.session.items.filter(id=>id==='PS').length,1);
+});
+
+test('correct guesses keep their flag on the map and repeat questions conceal their label',t=>{
+  const {api,el}=game(t);
+  api.startRun('samerica');
+  api.session.queue=[{id:'BR'},{id:'AR'},{id:'BR'}];
+  api.onPick('BR',null);
+  assert.match(el('labels').textContent,/🇧🇷 Brazil/);
+  api.skip();
+  assert.match(el('labels').textContent,/🇧🇷 Brazil/);
+  api.onPick('AR',null);
+  assert.match(el('labels').textContent,/🇦🇷 Argentina/);
+  api.skip();
+  assert.doesNotMatch(el('labels').textContent,/Brazil/);
+  api.goHome();
+  assert.equal(el('labels').textContent,'');
+});
+
+test('wrong guesses and reveals show flags while unguessed targets stay concealed',t=>{
+  const {api,el}=game(t);
+  api.startRun('samerica');
+  api.session.queue[0]={id:'BR'};
+  api.onPick('AR',null);
+  assert.match(el('fx').textContent,/🇦🇷 Argentina/);
+  assert.doesNotMatch(el('labels').textContent+el('fx').textContent,/Brazil/);
+  api.skip();
+  assert.match(el('fx').textContent,/🇧🇷 Brazil/);
+});
+
+test('a small revealed country keeps its flag badge visible after guessing',t=>{
+  const {api,el}=game(t);
+  api.startRun('mideast');
+  api.session.queue[0]={id:'PS'};
+  api.onPick('PS',null);
+  assert.match(el('labels').textContent,/🇵🇸 Palestine/);
+});
+
+test('zoom controls and keyboard shortcuts update the zoom indicator and reset the map',t=>{
+  const {api,w,el}=game(t);
+  api.startRun('samerica');
+  assert.equal(el('zoomLevel').textContent,'100%');
+  assert.equal(el('zout').disabled,true);
+  w.dispatchEvent(new w.KeyboardEvent('keydown',{key:'+',bubbles:true}));
+  assert.equal(el('zoomLevel').textContent,'160%');
+  assert.equal(el('zout').disabled,false);
+  w.dispatchEvent(new w.KeyboardEvent('keydown',{key:'0',bubbles:true}));
+  assert.equal(el('zoomLevel').textContent,'100%');
+  assert.equal(el('zout').disabled,true);
+  assert.equal(el('mapRegion').textContent,'South America');
+});
+
+test('theme choices apply immediately, persist, and keep the selected game mode',t=>{
+  const {api,w,el}=game(t);
+  el('themeChoices').querySelector('[data-theme="dark"]').click();
+  assert.equal(w.document.documentElement.dataset.theme,'dark');
+  assert.equal(api.state.theme,'dark');
+  assert.equal(JSON.parse(w.localStorage.getItem('blank-atlas.v1')).theme,'dark');
+  assert.equal(el('themeChoices').querySelector('[data-theme="dark"]').getAttribute('aria-pressed'),'true');
+  w.document.querySelector('[data-mode="explore"]').click();
+  assert.equal(el('themeChoices').querySelector('[data-theme="dark"]').getAttribute('aria-pressed'),'true');
+  el('themeChoices').querySelector('[data-theme="light"]').click();
+  assert.equal(w.document.documentElement.dataset.theme,'light');
+  assert.equal(w.document.querySelector('[data-mode="explore"]').getAttribute('aria-pressed'),'true');
+  el('themeChoices').querySelector('[data-theme="system"]').click();
+  assert.equal(w.document.documentElement.hasAttribute('data-theme'),false);
+  assert.equal(api.state.theme,'system');
+});
+
+test('saved themes restore safely and resetting progress preserves appearance',t=>{
+  const {api,w,el}=game(t,{theme:'dark',cards:{find:{BR:{b:2,n:2,c:2,w:0,due:0}}}});
+  assert.equal(w.document.documentElement.dataset.theme,'dark');
+  assert.equal(api.restore('{"theme":"invalid"}').theme,'system');
+  el('resetBtn').click();
+  el('rYes').click();
+  assert.equal(api.state.cards.find.BR,undefined);
+  assert.equal(api.state.theme,'dark');
+  assert.equal(w.document.documentElement.dataset.theme,'dark');
+  assert.equal(JSON.parse(w.localStorage.getItem('blank-atlas.v1')).theme,'dark');
+});
+
+
+test('region cards stay in a stable order and each has one clear action',t=>{
+  const {api,w,el}=game(t,{cards:{find:{IR:{b:1,n:1,c:1,due:0}}}});
+  const order=()=>Array.from(w.document.querySelectorAll('.rbody'),b=>b.dataset.region);
+  const initial=order();
+  assert.equal(w.document.querySelectorAll('.rcard button').length,7);
+  assert.match(el('reviewChip').textContent,/Review .* due today/);
+  assert.match(el('modeNote').textContent,/Learn a few countries/);
+  w.document.querySelector('[data-mode="explore"]').click();
+  assert.deepEqual(order().slice(0,7),initial);
+  assert.match(el('modeNote').textContent,/Browse freely/);
+  api.goHome();
+  assert.equal(w.document.querySelectorAll('.rbody').length,8);
+});
+
+test('returning to regions restores the selected card and scroll position',t=>{
+  const {api,w,el}=game(t);
+  const rail=el('regions');
+  rail.scrollLeft=320;rail.dispatchEvent(new w.Event('scroll'));
+  w.document.querySelector('[data-mode="explore"]').click();
+  const card=w.document.querySelector('.rbody[data-region="europe"]');
+  el('regions').scrollLeft=214;
+  card.click();
+  assert.equal(api.mode,'explore');
+  el('quit').click();
+  assert.equal(api.mode,'home');
+  assert.equal(el('regions').scrollLeft,214);
+  assert.equal(w.document.activeElement.dataset.region,'europe');
+  w.document.querySelector('[data-mode="find"]').click();
+  assert.equal(el('regions').scrollLeft,320);
+});
+
+test('Explore switches regions directly and clears the previous country details',t=>{
+  const {api,w,el}=game(t);
+  api.startExplore('samerica');api.showInfo('BR');
+  assert.equal(el('pName').textContent,'Brazil');
+  assert.equal(el('pFlag').textContent,api.C.get('BR').flag);
+  el('exploreRegion').value='mideast';
+  el('exploreRegion').dispatchEvent(new w.Event('change'));
+  assert.equal(api.region,'mideast');
+  assert.equal(api.mode,'explore');
+  assert.equal(el('info').hidden,true);
+  assert.equal(el('pName').textContent,'Choose a country');
+  assert.equal(w.document.activeElement,el('exploreRegion'));
+  api.showInfo('PS');
+  el('info').querySelector('.info-close').click();
+  assert.equal(el('pFlag').textContent,'');
+  assert.equal(el('pName').textContent,'Choose a country');
+});
+
+test('next questions preserve zoom when feedback changes the header height',t=>{
+  const {api,el}=game(t);
+  api.startChallenge();
+  api.session.queue=[{id:'BR'},{id:'AR'}];
+  api.onPick('BR',null);
+  el('zin').click();
+  el('bar').getBoundingClientRect=()=>({left:0,top:0,right:1000,bottom:240,width:1000,height:240});
+  el('showme').click();
+  assert.equal(api.session.pos,1);
+  assert.equal(el('zoomLevel').textContent,'160%');
+  assert.match(el('showme').textContent,/Reveal location/);
+  assert.equal(el('showme').classList.contains('next'),false);
+});
+
+test('resizing the map preserves the current exploration zoom',async t=>{
+  const {api,w,el}=game(t);
+  api.startExplore('europe');el('zin').click();el('zin').click();
+  const before=el('zoomLevel').textContent;
+  w.dispatchEvent(new w.Event('resize'));
+  await new Promise(resolve=>setTimeout(resolve,210));
+  assert.equal(el('zoomLevel').textContent,before);
+  assert.equal(api.region,'europe');
+});
+
+test('finishing a round opens results and the results return to regions',t=>{
+  const {api,el}=game(t);
+  api.startRun('samerica');api.onPick(api.session.queue[0].id,null);
+  el('quit').click();
+  assert.equal(api.mode,'summary');
+  assert.equal(el('summary').hidden,false);
+  el('doneBtn').click();
+  assert.equal(api.mode,'home');
+  assert.equal(el('bar').hidden,true);
+});
+
+
+test('finishing on a revealed map-run country includes it in the missed tally',t=>{
+  const {api,el}=game(t);
+  api.startRun('samerica');
+  const id=api.session.queue[0].id;
+  el('showme').click();el('quit').click();
+  assert.equal(api.mode,'summary');
+  assert.equal(el('summary').querySelectorAll('.tally b')[3].textContent,'1');
+  assert.match(el('summary').textContent,new RegExp(api.C.get(id).name));
+  assert.match(el('summary').textContent,/1\/12/);
+});
+
+test('leaving a map cancels an unfinished zoom animation',async t=>{
+  const {api,el}=game(t,undefined,false);
+  api.startExplore('europe');el('zin').click();el('quit').click();
+  await new Promise(resolve=>setTimeout(resolve,350));
+  assert.equal(api.mode,'home');
+  assert.equal(el('zoomLevel').textContent,'100%');
+  assert.equal(el('zg').getAttribute('transform'),'translate(0,0) scale(1)');
 });

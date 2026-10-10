@@ -2,7 +2,8 @@ const topojson=require('topojson-client');
 const simp=require('topojson-simplify');
 const topo=JSON.parse(JSON.stringify(require('world-atlas/countries-50m.json')));
 const wc=require('world-countries');
-const sov=wc.filter(c=>c.unMember||['VA','PS','XK','TW'].includes(c.cca2));
+const mapId=id=>id==='IL'?'PS':id;
+const sov=wc.filter(c=>c.cca2!=='IL'&&(c.unMember||['VA','PS','XK','TW'].includes(c.cca2)));
 const byN=new Map(wc.map(c=>[c.ccn3,c]));
 const cca3to2=new Map(wc.map(c=>[c.cca3,c.cca2]));
 const sovSet=new Set(sov.map(c=>c.cca2));
@@ -13,7 +14,7 @@ for(const g of geoms){
   let key;
   if(merge[g.properties.name]) key=merge[g.properties.name];
   else if(g.properties.name==='Kosovo') key='XK';
-  else if(g.id&&byN.get(g.id)) key=byN.get(g.id).cca2;
+  else if(g.id&&byN.get(g.id)) key=mapId(byN.get(g.id).cca2);
   else key='~'+g.properties.name;
   if(!groups.has(key))groups.set(key,[]);
   groups.get(key).push(g);
@@ -47,8 +48,8 @@ const countries=sov.map(c=>({
   flag:c.flag,
   r:regionOf(c),
   ll:c.latlng,
-  area:Math.round(c.area),
-  nb:(c.borders||[]).map(b=>cca3to2.get(b)).filter(b=>sovSet.has(b)),
+  area:Math.round(c.area+(c.cca2==='PS'?wc.find(x=>x.cca2==='IL').area:0)),
+  nb:[...new Set((c.cca2==='PS'?[...(c.borders||[]),...wc.find(x=>x.cca2==='IL').borders]:c.borders||[]).map(b=>mapId(cca3to2.get(b))).filter(b=>b!==c.cca2&&sovSet.has(b)))],
 }));
 const fs=require('fs');
 const q=topojson.quantize(t,1e5);fs.writeFileSync('data.json',JSON.stringify({topo:q,countries}));

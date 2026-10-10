@@ -26,7 +26,7 @@ const html=`<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Learn every country on the world map. Click to find countries, chart your own atlas, and play with a friend.">
 <meta name="theme-color" content="#f1f3ef" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0f181b" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#101b2a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Blank Atlas">
 <meta property="og:title" content="Blank Atlas">
