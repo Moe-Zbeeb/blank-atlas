@@ -32,9 +32,9 @@ function game(t,saved,reducedMotion=true){
   return{w,api,el:id=>w.document.getElementById(id)};
 }
 
-test('all seven regions are available on the home screen',t=>{
+test('all six regions are available on the home screen',t=>{
   const {w,el}=game(t);
-  assert.equal(w.document.querySelectorAll('.rcard').length,7);
+  assert.equal(w.document.querySelectorAll('.rcard').length,6);
   assert.equal(el('home').hidden,false);
   assert.match(el('regionHint').textContent,/choose a region/);
 });
@@ -222,7 +222,7 @@ test('Palestine is one selectable shape covering both former map entries',t=>{
   const palestine=w.topojson.feature(data.topo,geometries.find(g=>g.id==='PS'));
   for(const point of [[34.78,32.08],[35.20,31.90],[34.46,31.50],[34.80,30.60]])assert.ok(w.d3.geoContains(palestine,point),String(point));
   assert.equal(api.members('world').length,196);
-  assert.equal(api.members('mideast').length,23);
+  assert.equal(api.members('asia').length,48);
   assert.match(el('charted').textContent,/196 countries/);
   assert.equal(api.C.get('PS').flag,'🇵🇸');
   assert.deepEqual([...api.C.get('PS').nb].sort(),['EG','JO','LB','SY']);
@@ -238,7 +238,7 @@ test('saved progress for removed countries cannot reintroduce them into quizzes'
   assert.equal(api.state.cards.find.IL,undefined);
   assert.equal(api.state.cards.find.PS.b,2);
   assert.equal(api.state.conf.PS.IL,undefined);
-  api.startRun('mideast');
+  api.startRun('asia');
   assert.equal(api.session.items.includes('IL'),false);
   assert.equal(api.session.items.filter(id=>id==='PS').length,1);
 });
@@ -272,7 +272,7 @@ test('wrong guesses and reveals show flags while unguessed targets stay conceale
 
 test('a small revealed country keeps its flag badge visible after guessing',t=>{
   const {api,el}=game(t);
-  api.startRun('mideast');
+  api.startRun('asia');
   api.session.queue[0]={id:'PS'};
   api.onPick('PS',null);
   assert.match(el('labels').textContent,/🇵🇸 Palestine/);
@@ -326,14 +326,14 @@ test('region cards stay in a stable order and each has one clear action',t=>{
   const {api,w,el}=game(t,{cards:{find:{IR:{b:1,n:1,c:1,due:0}}}});
   const order=()=>Array.from(w.document.querySelectorAll('.rbody'),b=>b.dataset.region);
   const initial=order();
-  assert.equal(w.document.querySelectorAll('.rcard button').length,7);
+  assert.equal(w.document.querySelectorAll('.rcard button').length,6);
   assert.match(el('reviewChip').textContent,/Review .* due today/);
   assert.match(el('modeNote').textContent,/Learn a few countries/);
   w.document.querySelector('[data-mode="explore"]').click();
-  assert.deepEqual(order().slice(0,7),initial);
+  assert.deepEqual(order().slice(0,6),initial);
   assert.match(el('modeNote').textContent,/Browse freely/);
   api.goHome();
-  assert.equal(w.document.querySelectorAll('.rbody').length,8);
+  assert.equal(w.document.querySelectorAll('.rbody').length,7);
 });
 
 test('returning to regions restores the selected card and scroll position',t=>{
@@ -358,9 +358,9 @@ test('Explore switches regions directly and clears the previous country details'
   api.startExplore('samerica');api.showInfo('BR');
   assert.equal(el('pName').textContent,'Brazil');
   assert.equal(el('pFlag').textContent,api.C.get('BR').flag);
-  el('exploreRegion').value='mideast';
+  el('exploreRegion').value='asia';
   el('exploreRegion').dispatchEvent(new w.Event('change'));
-  assert.equal(api.region,'mideast');
+  assert.equal(api.region,'asia');
   assert.equal(api.mode,'explore');
   assert.equal(el('info').hidden,true);
   assert.equal(el('pName').textContent,'Choose a country');
@@ -425,4 +425,97 @@ test('leaving a map cancels an unfinished zoom animation',async t=>{
   assert.equal(api.mode,'home');
   assert.equal(el('zoomLevel').textContent,'100%');
   assert.equal(el('zg').getAttribute('transform'),'translate(0,0) scale(1)');
+});
+
+test('Asia is one region that includes Russia',t=>{
+  const {api}=game(t);
+  const asia=api.members('asia');
+  assert.equal(asia.length,48);
+  for(const id of ['RU','TR','SA','KZ','IN','CN','JP','ID'])assert.ok(asia.includes(id),id);
+  assert.equal(api.members('europe').includes('RU'),false);
+  assert.equal(api.C.get('RU').r,'asia');
+});
+
+test('map run bests from the old split Asia regions are not shown for the merged region',t=>{
+  const {api}=game(t,{best:{asia:{pct:90,ms:60000},mideast:{pct:80,ms:50000},europe:{pct:70,ms:90000}}});
+  assert.equal(api.state.best.asia,undefined);
+  assert.equal(api.state.best.mideast,undefined);
+  assert.equal(api.state.best.europe.pct,70);
+});
+
+test('a same-day repeat is scheduled for tomorrow instead of every ten minutes',t=>{
+  const {api}=game(t);
+  api.startSession({kind:'learn',region:'samerica'});
+  api.grade('BR',true);
+  const first=api.state.cards.find.BR.due;
+  assert.ok(first-Date.now()<=10*60000+1000);
+  api.startSession({kind:'learn',region:'samerica'});
+  api.grade('BR',true);
+  const tomorrow=new Date();tomorrow.setHours(24,0,0,0);
+  assert.equal(api.state.cards.find.BR.b,1);
+  assert.equal(api.state.cards.find.BR.due,tomorrow.getTime());
+});
+
+test('the home screen credits the maker and explains the map colours',t=>{
+  const {w,el}=game(t);
+  assert.match(w.document.querySelector('.byline').textContent,/Mohamad Zbib/);
+  assert.match(el('mapKey').textContent,/Uncharted 196/);
+  assert.match(el('modeNote').textContent,/Learn a few countries/);
+});
+
+test('tapping a territory gives feedback instead of crashing',t=>{
+  const {api,el}=game(t);
+  api.startSession({kind:'learn',region:'namerica'});
+  while(api.session.queue[api.session.pos].teach)api.skip();
+  assert.doesNotThrow(()=>api.onPick('GL',null));
+  assert.equal(api.session.phase,'reveal');
+  assert.match(el('pMsg').textContent,/Greenland, a territory rather than a country/);
+  api.goHome();
+  api.startRun('samerica');
+  assert.doesNotThrow(()=>api.onPick('FK',null));
+  assert.match(el('pMsg').textContent,/Falkland Islands/);
+  api.goHome();
+  api.startTeam('africa',3);
+  assert.doesNotThrow(()=>api.onPick('EH',null));
+  assert.equal(api.session.phase,'reveal');
+});
+
+test('the progress counter never exceeds the session size',t=>{
+  const {api,el}=game(t);
+  api.startSession({kind:'learn',region:'europe'});
+  const extra=api.members('europe').find(id=>!api.session.items.includes(id));
+  api.state.cards.find[extra]={b:1,due:Date.now()+86400000,n:1,c:1,w:0};
+  let tapped=false,guard=0;
+  while(api.session&&guard++<200){
+    const s=api.session;
+    if(s.phase==='ask'){api.onPick(tapped?s.queue[s.pos].id:extra,null);tapped=true}else api.skip();
+    if(api.session){const [a,b]=el('tick').textContent.split(' of ').map(Number);assert.ok(a<=b,el('tick').textContent)}
+  }
+});
+
+test('the review button names the number of countries the session will ask',t=>{
+  const now=Date.now(),cards={};
+  for(const id of ['FR','DE','ES','IT','PT','PL','NL','BE','AT','CH','SE','NO','FI','DK','IE','GR','RO','HU','CZ','SK','BG','HR','RS','BA','AL','EE','LV','LT'])cards[id]={b:1,due:now-1000,n:1,c:1,w:0};
+  const {api,el}=game(t,{cards:{find:cards}});
+  assert.match(el('reviewChip').textContent,/Review 25 countries/);
+  assert.match(el('reviewChip').textContent,/28 due today/);
+  el('reviewChip').click();
+  assert.equal(api.session.items.length,25);
+});
+
+test('quitting a team game early does not show an empty list',t=>{
+  const {api,el}=game(t);
+  api.startTeam('europe',5);
+  api.onPick(api.session.queue[0].id,null);
+  el('quit').click();
+  assert.doesNotMatch(el('summary').textContent,/Nobody found these/);
+});
+
+test('a charted country keeps its map colour after a wrong answer',t=>{
+  const {w,api}=game(t,{cards:{find:{PE:{b:1,due:0,n:1,c:1,w:0}}}});
+  api.startSession({kind:'learn',region:'samerica'});
+  api.grade('PE',false);
+  api.goHome();
+  assert.equal(api.state.cards.find.PE.b,0);
+  assert.match(w.document.querySelector('#lands path[data-id="PE"]').getAttribute('class'),/\bb1\b/);
 });

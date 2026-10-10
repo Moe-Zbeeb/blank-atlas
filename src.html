@@ -14,8 +14,8 @@
   --land:#f6f4ee;
   --hatch:#e4e0d5;
   --land-out:#e1e6e2;
-  --edge:#ffffff;
-  --edge-out:var(--edge);
+  --edge:#6c7f85;
+  --edge-out:#a9b7ba;
   --edge-width:1;
   --hatch-opacity:1;
   --map-glow:transparent;
@@ -68,7 +68,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .hl{stroke:var(--hatch);stroke-width:1.3;stroke-opacity:var(--hatch-opacity)}
 .c{fill:var(--land-out);stroke:var(--edge-out);stroke-width:var(--edge-width);vector-effect:non-scaling-stroke;stroke-linejoin:round;transition:fill .25s ease}
 .c.in{fill:url(#hatch);stroke:var(--edge)}
-#map:not(.home) .c.in:hover,#map:not(.home) .mk:hover{stroke:var(--ink);stroke-width:1.6}
+#map .c.in:hover,#map .mk:hover{stroke:var(--ink);stroke-width:1.6}
 .mk{fill:var(--land);stroke:var(--muted);stroke-width:1;vector-effect:non-scaling-stroke;transition:fill .5s}
 .hit{fill:transparent}
 #map.home #marks{display:none}
@@ -95,16 +95,37 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 #home>*{pointer-events:none}
 #home .cartouche,#home .h-status>*,#home .qchips>*,#home .strip{pointer-events:auto}
 .h-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;position:relative}
-.cartouche{position:relative;width:320px;background:var(--paper);border:1px solid var(--rule);border-radius:14px;padding:16px 20px 14px;box-shadow:var(--shadow)}
+.cartouche{position:relative;width:368px;background:var(--paper);border:1px solid var(--rule);border-radius:14px;padding:16px 20px 14px;box-shadow:var(--shadow)}
 .cartouche::before{content:"";position:absolute;inset:4px;border:1px solid var(--rule);border-radius:10px;pointer-events:none}
 .mark{margin:0;font:italic 500 30px/1 var(--f-water);letter-spacing:-.01em}
 .cartouche p{margin:5px 0 10px;font-size:13.5px;color:var(--muted);font-weight:500}
+.cartouche .byline{margin:4px 0 0;font:italic 400 14px/1.2 var(--f-water);color:var(--muted);letter-spacing:.01em}
+.key{display:flex;flex-wrap:wrap;gap:6px 14px;margin:-4px 0 12px;font-size:12.5px;color:var(--muted)}
+.key span{display:flex;align-items:center;gap:6px}
+.key b{color:var(--ink);font-weight:750;font-variant-numeric:tabular-nums}
+.key svg{width:16px;height:16px;border-radius:4px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--rule)}
+.mode-desc{margin:10px 0 0!important;font-size:13px!important;line-height:1.4;color:var(--muted)}
+.menu .maker{color:var(--ink);font-weight:600}
+.menu .maker a{color:var(--accent);font-weight:700}
+.rmapwrap{position:relative;display:block}
+.rmapwrap .rbadge{position:absolute;top:6px;right:6px;box-shadow:0 1px 2px #0002}
+.rbar{flex-basis:100%;width:100%;display:flex;height:5px;border-radius:3px;background:var(--land-out);overflow:hidden;margin-top:4px}
+.rbar i{display:block;height:100%}
+.rbar .m{background:var(--ok)}
+.rbar .c{background:color-mix(in oklab,var(--ok) 38%,var(--land-out))}
+.runtally{display:flex;flex-wrap:wrap;gap:6px}
+.runtally span{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:650;padding:4px 9px;border-radius:999px;background:var(--land-out);font-variant-numeric:tabular-nums}
+.runtally i{width:9px;height:9px;border-radius:3px}
+#scale{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:2;display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none;font:italic 13px/1 var(--f-water);color:var(--water-ink)}
+#scale i{display:block;height:6px;border:1px solid var(--water-ink);border-radius:1px;background:linear-gradient(90deg,var(--water-ink) 0 25%,transparent 25% 50%,var(--water-ink) 50% 75%,transparent 75%)}
+#tip{position:fixed;z-index:6;pointer-events:none;background:var(--ink);color:var(--paper);font-size:13px;font-weight:650;padding:5px 9px;border-radius:8px;box-shadow:var(--shadow);white-space:nowrap}
 .cartouche p b{color:var(--ink);font-weight:800}
 .ticks{display:block;width:100%;height:8px;margin-bottom:14px}
 .ticks rect{fill:var(--land-out)}
 .ticks rect.ch{fill:color-mix(in oklab,var(--ok) 38%,var(--land-out))}
 .ticks rect.ms{fill:var(--ok)}
-.c-row{display:flex;align-items:center;justify-content:space-between;gap:10px;position:relative;z-index:1}
+.c-row{display:flex;align-items:center;gap:10px;position:relative;z-index:1}
+.tabs button{white-space:nowrap}
 .tabs{display:inline-flex;gap:2px;background:var(--land-out);border-radius:9px;padding:2px}
 .tabs button{min-height:44px;padding:8px 14px;border-radius:7px;font-size:13px;font-weight:600;color:var(--muted)}
 .tabs button[aria-pressed="true"]{background:var(--raise);color:var(--ink);box-shadow:0 1px 2px #0002}
@@ -270,6 +291,8 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .vs span{font-weight:750;font-size:14px}
 
 /* map run */
+#map.blank .c.in.b1,#map.blank .c.in.b2,#map.blank .c.in.b3{fill:url(#hatch)}
+#map.blank .mk.b1,#map.blank .mk.b2,#map.blank .mk.b3{fill:var(--land)}
 .c.r1,.mk.r1{fill:var(--ok)!important}
 .c.r2,.mk.r2{fill:var(--r2)!important}
 .c.r3,.mk.r3{fill:var(--r3)!important}
@@ -325,6 +348,10 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
   .chip{min-height:44px;padding:8px 11px;font-size:12px;white-space:nowrap;flex-shrink:0}
   .strip{display:flex;align-items:stretch;overflow-x:auto;padding:2px 2px 8px;gap:8px;scroll-snap-type:x mandatory}
   .rcard{min-width:0;flex:0 0 164px}
+  #scale{bottom:calc(112px + env(safe-area-inset-bottom,0px))}
+  .tabs{display:flex;width:100%}
+  .tabs button{flex:1}
+  .key{gap:6px 12px}
   .rmap{height:54px}
   #summary.side{left:12px;right:12px;top:auto;bottom:12px;width:auto;max-height:52%}
   .tabs button{padding:8px 10px;font-size:13px}
@@ -357,6 +384,9 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
   .mark{font-size:28px}
 }
 @media (max-width:380px){#zoomLevel{display:none}.map-dock{max-width:calc(100% - 112px)}.q .name{font-size:24px}}
+@media (max-height:680px) and (min-width:761px){
+  #home{overflow-y:auto;pointer-events:auto}
+}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -370,13 +400,17 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
     <g id="zg"><g id="grat"></g><g id="seas"></g><g id="lands"></g><g id="marks"></g><g id="labels"></g><g id="fx"></g></g>
   </svg>
   <div id="ripples"></div>
+  <div id="tip" role="tooltip" hidden></div>
+  <div id="scale" aria-hidden="true" hidden><i></i><span></span></div>
 
   <section id="home" aria-label="Home">
     <div class="h-top">
       <div class="cartouche">
         <h1 class="mark">Blank Atlas</h1>
+        <p class="byline">Charted by Mohamad Zbib</p>
         <p id="charted"></p>
         <svg class="ticks" id="ticks" viewBox="0 0 591 8" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <div class="key" id="mapKey" aria-label="Map key"></div>
         <div class="c-row">
           <div class="tabs" role="group" aria-label="Mode">
             <button data-mode="find" aria-pressed="true">Learn</button>
@@ -400,6 +434,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
           <button class="opt" id="soundBtn"></button>
           <div id="resetWrap"></div>
           <p class="note">Progress is saved in this browser. Map data from Natural Earth.</p>
+          <p class="note maker">Made by Mohamad Zbib · <a href="https://github.com/Moe-Zbeeb/blank-atlas" target="_blank" rel="noopener">Source on GitHub</a></p>
         </div>
       </div>
     </div>
@@ -429,6 +464,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
       <div class="score" id="score" hidden><span class="sa"><i></i>Blue <b id="scA">0</b></span><span class="sb"><i></i>Gold <b id="scB">0</b></span></div>
     </div>
     <p class="msg" id="pMsg" aria-live="polite"></p>
+    <div class="runtally" id="runTally" hidden></div>
   </header>
 
   <aside id="info" hidden></aside>
@@ -465,8 +501,7 @@ const REGIONS=[
   {id:'europe',name:'Europe',box:[-24,34,46,71]},
   {id:'namerica',name:'North and Central America',box:[-128,6,-58,56]},
   {id:'africa',name:'Africa',box:[-26,-36,58,38]},
-  {id:'mideast',name:'Middle East and Central Asia',box:[25,11,88,55]},
-  {id:'asia',name:'South and East Asia',box:[64,-12,148,53]},
+  {id:'asia',name:'Asia',box:[26,-11,180,76]},
   {id:'oceania',name:'Oceania',box:[112,-47,200,14]},
 ];
 const WORLD={id:'world',name:'the world'};
@@ -492,7 +527,7 @@ function restore(raw){
   if(saved.goal&&typeof saved.goal.date==='string'&&Number.isFinite(saved.goal.n))s.goal={date:saved.goal.date,n:Math.max(0,saved.goal.n)};
   if(saved.chal&&typeof saved.chal.date==='string'&&Array.isArray(saved.chal.res)&&Number.isFinite(saved.chal.score)&&Number.isFinite(saved.chal.ms))s.chal=saved.chal;
   if(saved.team&&REG[saved.team.region]&&[3,5,8,10].includes(saved.team.rounds))s.team=saved.team;
-  if(saved.best&&typeof saved.best==='object')for(const [region,best] of Object.entries(saved.best))if(REG[region]&&best&&Number.isFinite(best.pct)&&best.pct>=0&&best.pct<=100&&Number.isFinite(best.ms)&&best.ms>=0)s.best[region]={pct:best.pct,ms:best.ms,date:typeof best.date==='string'?best.date:''};
+  if(saved.best&&typeof saved.best==='object')for(const [region,best] of Object.entries(saved.best))if(REG[region]&&best&&Number.isFinite(best.pct)&&best.pct>=0&&best.pct<=100&&Number.isFinite(best.ms)&&best.ms>=0&&(best.n===undefined?region!=='asia':best.n===members(region).length))s.best[region]={pct:best.pct,ms:best.ms,n:members(region).length,date:typeof best.date==='string'?best.date:''};
   if(saved.conf&&typeof saved.conf==='object')for(const [id,pairs] of Object.entries(saved.conf))if(C.has(id)&&pairs&&typeof pairs==='object')s.conf[id]=Object.fromEntries(Object.entries(pairs).filter(([other,n])=>C.has(other)&&Number.isFinite(n)&&n>0));
   for(const [id,k] of Object.entries(saved.cards?.find||{})){
     if(!C.has(id)||!k||typeof k!=='object')continue;
@@ -544,6 +579,10 @@ for(const f of features){
 const GC=new Map();
 for(const c of DATA.countries)GC.set(c.id,MAIN.has(c.id)?d3.geoCentroid(MAIN.get(c.id)):[c.ll[1],c.ll[0]]);
 const nameOf=id=>C.has(id)?C.get(id).name:(FEAT.get(id)?.properties.n||String(id).replace(/^~/,''));
+function ctr(id){
+  if(!GC.has(id)&&MAIN.has(id))GC.set(id,d3.geoCentroid(MAIN.get(id)));
+  return GC.get(id)||null;
+}
 
 const color={};
 {const order=[...DATA.countries].sort((a,b)=>b.nb.length-a.nb.length);let rot=0;
@@ -566,8 +605,8 @@ function insets(){
   if(mode==='home'||mode==='summary'){
     if(mode==='summary'&&$('summary').classList.contains('side'))return mobile?[16,8,Math.round(innerHeight*.54),8]:[24,428,24,24];
     if(mode==='summary'||$('home').hidden)return[24,24,24,24];
-    const bt=$('homeBottom').getBoundingClientRect().top,H0=innerHeight;
-    const top=mobile?$('home').querySelector('.h-top').getBoundingClientRect().bottom+6:24;
+    const sc=$('home').scrollTop,bt=$('homeBottom').getBoundingClientRect().top+sc,H0=innerHeight;
+    const top=mobile?$('home').querySelector('.h-top').getBoundingClientRect().bottom+sc+6:24;
     return[top,mobile?8:24,Math.max(24,H0-bt+6),mobile?8:24];
   }
   const top=($('bar').hidden?0:$('bar').getBoundingClientRect().bottom)+14;
@@ -602,7 +641,8 @@ function project(rid,animate){
   els.clear();
   landSel.each(function(d){els.set(d.id,[this])});
   mk.select('.mk').each(function(d){if(!els.has(d.id))els.set(d.id,[]);els.get(d.id).push(this)});
-  const seas=SEAS.filter(s=>rid==='world'?s[2]&&ext[1][0]-ext[0][0]>620:true).map(s=>{const p=proj(s[1]);return p&&isFinite(p[0])?{n:s[0],x:p[0],y:p[1],big:s[2]}:null}).filter(Boolean);
+  const center=rid==='world'?null:[(REG[rid].box[0]+REG[rid].box[2])/2,(REG[rid].box[1]+REG[rid].box[3])/2];
+  const seas=SEAS.filter(s=>rid==='world'?s[2]&&ext[1][0]-ext[0][0]>620:d3.geoDistance(s[1],center)<1.5).map(s=>{const p=proj(s[1]);return p&&isFinite(p[0])?{n:s[0],x:p[0],y:p[1],big:s[2]}:null}).filter(Boolean);
   d3.select('#seas').selectAll('text').data(seas).join('text').attr('class','sea').attr('x',d=>d.x).attr('y',d=>d.y).text(d=>d.n);
   zoom.translateExtent([[-W*.6,-H*.6],[W*1.6,H*1.6]]);
   svg.call(zoom.transform,d3.zoomIdentity);
@@ -612,8 +652,9 @@ function project(rid,animate){
 }
 
 function setCls(id,cls,on){for(const e of els.get(id)||[])e.classList.toggle(cls,on)}
+const lvl=k=>Math.min(3,k.b>0?k.b:k.c>0?1:0);
 function paint(){
-  for(const c of DATA.countries){const b=Math.min(3,peek(c.id).b);for(const e of els.get(c.id)||[]){e.classList.remove('b1','b2','b3');if(b>0)e.classList.add('b'+b)}}
+  for(const c of DATA.countries){const b=lvl(peek(c.id));for(const e of els.get(c.id)||[]){e.classList.remove('b1','b2','b3');if(b>0)e.classList.add('b'+b)}}
 }
 
 const zoom=d3.zoom().scaleExtent([1,80]).clickDistance(COARSE?10:5)
@@ -621,11 +662,25 @@ const zoom=d3.zoom().scaleExtent([1,80]).clickDistance(COARSE?10:5)
   .on('end',()=>refreshLabels());
 svg.call(zoom).on('dblclick.zoom',null);
 
+function renderScale(){
+  const el=$('scale');
+  if(!(mode==='play'||mode==='explore')||curRegion==='world'||(mode==='explore'&&!$('info').hidden)||!proj||!proj.invert){el.hidden=true;return}
+  const cy=(insets()[0]+H-80)/2,a=proj.invert(T.invert([W/2-50,cy])),b=proj.invert(T.invert([W/2+50,cy]));
+  if(!a||!b||!a.every(isFinite)||!b.every(isFinite)){el.hidden=true;return}
+  const kmPerPx=d3.geoDistance(a,b)*6371/100;
+  if(!(kmPerPx>0)){el.hidden=true;return}
+  const nice=[10,20,25,50,100,200,250,500,1000,2000,2500,5000];
+  const len=nice.find(n=>n/kmPerPx>=70&&n/kmPerPx<=150)||nice.reduce((p,n)=>Math.abs(n/kmPerPx-110)<Math.abs(p/kmPerPx-110)?n:p);
+  el.hidden=false;
+  el.querySelector('i').style.width=Math.round(len/kmPerPx)+'px';
+  el.querySelector('span').textContent=`${len.toLocaleString('en')} km`;
+}
 function scaleDeps(){
   const k=T.k;
   $('zoomLevel').textContent=Math.round(k*100)+'%';
   $('zout').disabled=k<=1.001;
   $('zin').disabled=k>=79.999;
+  renderScale();
   svg.node().style.setProperty('--sk',(4/k)+'px');
   hatch.setAttribute('patternTransform',`scale(${1/k}) rotate(45)`);
   d3.select('#marks').selectAll('.mk').attr('r',(COARSE?7:5.5)/k);
@@ -639,6 +694,12 @@ function scaleDeps(){
 let labelIds=[];
 const revealedIds=new Set();
 function setLabels(ids){labelIds=ids;refreshLabels()}
+function nameIt(id){
+  if(!sess||!C.has(id))return;
+  (sess.named||(sess.named=new Set())).add(id);
+  setLabels([...new Set([...(sess.anchors||[]),...sess.named])]);
+}
+function homeLabels(){setLabels(DATA.countries.filter(c=>peek(c.id).b>=3).map(c=>c.id))}
 function refreshLabels(){
   if(!proj)return;
   const data=[];
@@ -649,7 +710,7 @@ function refreshLabels(){
   for(const id of ids){
     if(id===active&&(sess.phase==='ask'||sess.phase==='teach'||sess.phase==='reveal'))continue;
     if($('fx').querySelector(`[data-id="${id}"]`))continue;
-    const m=MAIN.get(id),p=proj(GC.get(id));if(!p||!isFinite(p[0]))continue;
+    const m=MAIN.get(id),p=proj(ctr(id));if(!p||!isFinite(p[0]))continue;
     const nm=nameOf(id),isMk=markers.some(x=>x.id===id),known=revealedIds.has(id);
     const width=Math.max(52,nm.length*6.8+(C.has(id)?38:20));
     if(!known){
@@ -679,7 +740,8 @@ function refreshLabels(){
   scaleDeps();
 }
 function fxLabel(id,text,cls){
-  const p=proj(GC.get(id));if(!p)return;
+  const g=ctr(id);if(!g)return;
+  const p=proj(g);if(!p||!isFinite(p[0]))return;
   if(C.has(id))revealedIds.add(id);
   if(cls==='rise'){refreshLabels();return}
   const isMk=markers.some(x=>x.id===id);
@@ -697,7 +759,7 @@ function ripple(ev,bad){
 function bounds(id){
   const m=MAIN.get(id);
   if(m&&!markers.some(x=>x.id===id))return path.bounds(m);
-  const p=proj(GC.get(id));if(!p)return[[NaN,NaN],[NaN,NaN]];return[[p[0]-14,p[1]-14],[p[0]+14,p[1]+14]];
+  const g=ctr(id),p=g&&proj(g);if(!p)return[[NaN,NaN],[NaN,NaN]];return[[p[0]-14,p[1]-14],[p[0]+14,p[1]+14]];
 }
 function ensureVisible(ids,minPx){
   const bs=ids.map(bounds).filter(b=>b.flat().every(isFinite));
@@ -722,20 +784,42 @@ $('zout').onclick=()=>camera(250).call(zoom.scaleBy,1/1.6);
 $('zfit').onclick=()=>camera(280).call(zoom.transform,d3.zoomIdentity);
 
 /* picking */
-svg.on('click',e=>{
-  const pt=d3.pointer(e,svg.node()),p=T.invert(pt);
+function countryUnder(e){
+  const stack=document.elementsFromPoint?document.elementsFromPoint(e.clientX,e.clientY):[e.target];
+  const el=stack.find(x=>x&&x.matches&&x.matches('path.c'));
+  return el?el.dataset.id:null;
+}
+function pickAt(e){
+  const pt=d3.pointer(e,svg.node()),p=T.invert(pt),under=countryUnder(e);
   let best=null,bd=(COARSE?20:12)/T.k;
   for(const m of markers){const d=Math.hypot(m.x-p[0],m.y-p[1]);if(d<bd){bd=d;best=m.id}}
-  const hp=e.target.closest&&e.target.closest('path.c');
-  const id=best||(hp&&hp.dataset.id)||null;
-  onPick(id,pt);
-});
+  const isDot=id=>markers.some(m=>m.id===id);
+  const dotRadius=(COARSE?7:5.5)/T.k*1.25;
+  const inRegion=under&&els.get(under)?.[0]?.classList.contains('in');
+  let id;
+  if(best&&bd<=dotRadius)id=best;
+  else if(under&&(isDot(under)||inRegion))id=under;
+  else id=best||under;
+  return{id,pt};
+}
+svg.on('click',e=>{const {id,pt}=pickAt(e);onPick(id||null,pt)});
+
+svg.on('mousemove.tip',e=>{
+  const tip=$('tip');
+  if(!['explore','home','summary'].includes(mode)||COARSE){tip.hidden=true;return}
+  const {id}=pickAt(e);
+  if(!id){tip.hidden=true;return}
+  const c=C.get(id);
+  tip.textContent=c?`${c.flag} ${c.name}`:nameOf(id);
+  tip.hidden=false;tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY+14)+'px';
+}).on('mouseleave.tip',()=>{$('tip').hidden=true});
 
 /* geography text */
 function bearing(a,b){const r=Math.PI/180,[l1,p1]=[a[0]*r,a[1]*r],[l2,p2]=[b[0]*r,b[1]*r];const y=Math.sin(l2-l1)*Math.cos(p2),x=Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(l2-l1);return(Math.atan2(y,x)/r+360)%360}
 const DIRS=['north','north-east','east','south-east','south','south-west','west','north-west'];
 function relText(from,to){
-  const a=GC.get(from)||d3.geoCentroid(FEAT.get(from)),b=GC.get(to);
+  const a=ctr(from),b=ctr(to);
+  if(!a||!b)return'elsewhere';
   const km=d3.geoDistance(a,b)*6371;
   const r=km<300?Math.round(km/10)*10:km<2000?Math.round(km/50)*50:Math.round(km/100)*100;
   return `${r.toLocaleString()} km ${DIRS[Math.round(bearing(a,b)/45)%8]}`;
@@ -773,7 +857,7 @@ function miniPaths(rid){
 }
 function miniMap(rid){
   return `<svg class="rmap" viewBox="0 0 240 88" preserveAspectRatio="xMidYMid meet" aria-hidden="true">`+miniPaths(rid).map(m=>{
-    const b=Math.min(3,peek(m.id).b),cls=`c in tc${color[m.id]}${b?' b'+b:''}`;
+    const b=lvl(peek(m.id)),cls=`c in tc${color[m.id]}${b?' b'+b:''}`;
     return m.d?`<path class="${cls}" d="${m.d}"/>`:`<circle class="${cls}" cx="${m.cx}" cy="${m.cy}" r="1.6"/>`;
   }).join('')+`</svg>`;
 }
@@ -795,9 +879,12 @@ function renderHome(){
   $('ticks').innerHTML=order.map((v,i)=>`<rect x="${i*3}" y="0" width="2" height="8"${v===2?' class="ms"':v===1?' class="ch"':''}/>`).join('');
   document.querySelectorAll('.tabs button[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===homeMode));
   $('modeNote').textContent=homeMode==='explore'?'Browse freely. Select a country to see its flag, capital and neighbours.':homeMode==='run'?'Find every country in a region. You have three tries for each.':'Learn a few countries at a time, then find them on the map.';
+  const unch=w.total-w.charted,sw=c=>`<svg viewBox="0 0 16 16" aria-hidden="true">${c}</svg>`;
+  $('mapKey').innerHTML=`<span>${sw('<rect width="16" height="16" rx="3" fill="url(#hatch)"/>')}Uncharted <b>${unch}</b></span><span>${sw('<rect width="6" height="16" style="fill:color-mix(in oklab,var(--t0) 40%,var(--land))"/><rect x="5" width="6" height="16" style="fill:color-mix(in oklab,var(--t2) 40%,var(--land))"/><rect x="10" width="6" height="16" style="fill:color-mix(in oklab,var(--t4) 40%,var(--land))"/>')}Charted <b>${w.charted-w.mast}</b></span><span>${sw('<rect width="6" height="16" style="fill:var(--t0)"/><rect x="5" width="6" height="16" style="fill:var(--t2)"/><rect x="10" width="6" height="16" style="fill:var(--t4)"/>')}Mastered <b>${w.mast}</b></span>`;
   const due=dueIds(),rec=recommended(),regs=homeMode==='find'?REGIONS:[...REGIONS,{id:'world',name:'Whole world'}];
   $('reviewChip').hidden=homeMode!=='find'||!due.length;
-  $('reviewChip').textContent=`Review ${due.length} due today`;
+  const nr=Math.min(due.length,25);
+  $('reviewChip').textContent=`Review ${nr} ${nr===1?'country':'countries'}${due.length>nr?` · ${due.length} due today`:' due today'}`;
   $('reviewChip').onclick=()=>startSession({kind:'review'});
   $('regionHint').textContent=innerWidth<=760?'Swipe to choose a region':'Scroll sideways to choose a region';
   const box=$('regions');box.innerHTML='';
@@ -806,9 +893,10 @@ function renderHome(){
     const card=document.createElement('div');card.className='rcard'+(active?' active':'');
     const best=S.best[r.id];
     const line=homeMode==='run'?(best?`${s.total} countries, best ${fmtTime(best.ms)}`:`${s.total} countries`):s.charted===0?`${s.total} countries`:s.mast===s.total?'All mastered':`${s.charted} of ${s.total} charted`;
+    const bar=homeMode==='run'?`<span class="rbar" aria-hidden="true"><i class="m" style="width:${best?best.pct:0}%"></i></span>`:`<span class="rbar" aria-hidden="true"><i class="m" style="width:${s.mast/s.total*100}%"></i><i class="c" style="width:${(s.charted-s.mast)/s.total*100}%"></i></span>`;
     const badge=active?'<span class="rbadge">Suggested</span>':homeMode==='run'?(best?`<span class="rbadge${best.pct===100?' done':''}">Best ${best.pct}%</span>`:''):homeMode==='find'?(s.due?`<span class="rbadge">${s.due} to review</span>`:s.mast===s.total?`<span class="rbadge done">Done</span>`:''):'';
     const action=homeMode==='explore'?'Explore map':homeMode==='run'?'Start map run':s.charted?'Continue learning':'Start learning';
-    card.innerHTML=`<button class="rbody" data-region="${r.id}">${miniMap(r.id)}<span class="rinfo"><span><b></b><small>${line}</small></span>${badge}</span><span class="r-action">${action} →</span></button>`;
+    card.innerHTML=`<button class="rbody" data-region="${r.id}">${miniMap(r.id)}<span class="rinfo"><span><b></b><small>${line}</small></span>${badge}${bar}</span><span class="r-action">${action} →</span></button>`;
     card.querySelector('b').textContent=r.name;
     const body=card.querySelector('.rbody');
     body.setAttribute('aria-label',`${action} in ${r.name}: ${line}`);
@@ -845,7 +933,7 @@ function resetFoot(){
   $('resetWrap').innerHTML='<button class="opt" id="resetBtn"><span>Reset progress</span><span>…</span></button>';
   $('resetBtn').onclick=()=>{
     $('resetWrap').innerHTML='<p class="note" style="margin:6px 0">Erase all progress in this browser?</p><div class="row"><button class="btn danger" id="rYes">Erase</button><button class="btn" id="rNo">Keep</button></div>';
-    $('rYes').onclick=()=>{const theme=S.theme;S=blank();S.theme=theme;save();resetFoot();paint();renderHome()};
+    $('rYes').onclick=()=>{const theme=S.theme;S=blank();S.theme=theme;save();resetFoot();paint();renderHome();homeLabels()};
     $('rNo').onclick=resetFoot;
   };
 }
@@ -859,6 +947,8 @@ function show(m){
   mode=m;
   if(m!=='summary'){revealedIds.clear();labelIds=[];d3.select('#labels').selectAll('*').remove()}
   $('home').hidden=m!=='home';
+  $('tip').hidden=true;
+  $('scale').hidden=true;
   closeMenu();
   $('summary').classList.remove('side');
   $('combo').className='combo';
@@ -881,11 +971,12 @@ function show(m){
   $('ctrls').classList.toggle('exploring',m==='explore');
   $('showme').classList.remove('next');
   document.querySelectorAll('.hlr').forEach(e=>e.classList.remove('hlr'));
+  svg.classed('blank',(m==='play'||m==='summary')&&!!sess&&['run','team','challenge'].includes(sess.kind));
   svg.classed('quiz',m==='play').classed('home',m==='home'||m==='summary'||m==='setup');
 }
 function goHome(){
   document.querySelectorAll('.ta,.tb,.r1,.r2,.r3,.rx').forEach(e=>e.classList.remove('ta','tb','r1','r2','r3','rx'));
-  $('summary').classList.remove('side');sess=null;clearFx();setLabels([]);clearTransient();show('home');renderHome();project('world',true);
+  $('summary').classList.remove('side');sess=null;clearFx();setLabels([]);clearTransient();show('home');renderHome();project('world',true);homeLabels();
   const origin=document.querySelector(`.rbody[data-region="${lastRegion}"]`);
   if(origin){
     const card=origin.getBoundingClientRect(),rail=$('regions').getBoundingClientRect();
@@ -981,8 +1072,10 @@ function startTeam(region,rounds){
 function teamFinish(){
   const s=sess;sess=null;
   clearTransient();clearFx();setLabels([]);
-  show('summary');
+  show('summary');svg.classed('blank',true);
+  setLabels(s.items.filter(id=>s.res[id]!==undefined));
   const [a,b]=s.score,claimed=[0,1].map(t=>Object.keys(s.owner).filter(id=>s.owner[id]===t));
+  const nobody=s.items.filter(id=>s.res[id]!==undefined&&s.owner[id]===undefined);
   const head=a===b?`It's a draw, ${a} all`:`${a>b?'Blue':'Gold'} wins ${Math.max(a,b)} to ${Math.min(a,b)}`;
   $('summary').innerHTML=`
     <div><p class="kick">${esc(REG[s.region].name==='the world'?'Whole world':REG[s.region].name)}, ${s.rounds} turns each</p><h2>${head}</h2></div>
@@ -990,7 +1083,7 @@ function teamFinish(){
       <div class="a${a>b?' win':''}"><span>Blue</span><b>${a}</b><small>${claimed[0].length} ${claimed[0].length===1?'country':'countries'} claimed</small></div>
       <div class="b${b>a?' win':''}"><span>Gold</span><b>${b}</b><small>${claimed[1].length} ${claimed[1].length===1?'country':'countries'} claimed</small></div>
     </div>
-    ${s.items.some(id=>s.owner[id]===undefined)?`<div class="newly"><p>Nobody found these</p><div class="flags">${s.items.filter(id=>s.res[id]!==undefined&&s.owner[id]===undefined).map(id=>`<span>${C.get(id).flag} ${esc(C.get(id).name)}</span>`).join('')}</div></div>`:''}
+    ${nobody.length?`<div class="newly"><p>Nobody found these</p><div class="flags">${nobody.map(id=>`<span>${C.get(id).flag} ${esc(C.get(id).name)}</span>`).join('')}</div></div>`:''}
     <div class="row"><button class="btn primary" id="rematch">Rematch</button><button class="btn" id="tSet">Change settings</button><button class="btn" id="doneBtn">Back to regions</button></div>`;
   $('rematch').onclick=()=>startTeam(s.region,s.rounds);
   $('tSet').onclick=openTeamSetup;
@@ -1010,10 +1103,11 @@ function runTick(s){
   const el=$('combo');el.hidden=false;el.className='combo timer';el.textContent=fmtTime(Date.now()-s.t0);
   setTimeout(()=>runTick(s),500);
 }
-function runMark(id,cls){sess.mark[id]=cls;for(const e of els.get(id)||[]){e.classList.remove('r1','r2','r3','rx');e.classList.add(cls)}}
+function runMark(id,cls){sess.mark[id]=cls;for(const e of els.get(id)||[]){e.classList.remove('r1','r2','r3','rx');e.classList.add(cls)}nameIt(id)}
 function runReveal(t,msg){
   grade(t,false);sess.phase='reveal';sBad();
   setCls(t,'reveal',true);fxLabel(t,C.get(t).name,'t');
+  sess.autoZoom=true;
   ensureVisible([t],markers.some(m=>m.id===t)?70:0);
   $('pMsg').innerHTML=msg;$('showme').innerHTML='Next country <kbd>Space</kbd>';$('showme').classList.add('next');renderSegs();
 }
@@ -1049,13 +1143,14 @@ function runFinish(){
   const total=s.items.length,complete=ids.length===total;
   const pct=Math.round(n.r1/total*100);
   let isBest=false,hadPrev=!!S.best[s.region];
-  if(complete){const prev=S.best[s.region];if(!prev||pct>prev.pct||(pct===prev.pct&&ms<prev.ms)){S.best[s.region]={pct,ms,date:today()};isBest=true}}
+  if(complete){const prev=S.best[s.region];if(!prev||pct>prev.pct||(pct===prev.pct&&ms<prev.ms)){S.best[s.region]={pct,ms,n:total,date:today()};isBest=true}}
   if(ids.length&&!S.days.includes(today())){S.days.push(today());S.days=S.days.slice(-400)}
   save();
-  show('summary');
+  show('summary');svg.classed('blank',true);
   $('summary').classList.add('side');
   project(s.region,true);
   for(const [id,cls] of Object.entries(s.mark))setCls(id,cls,true);
+  setLabels(s.items);
   const name=s.region==='world'?'the whole world':REG[s.region].name;
   const missed=ids.filter(id=>s.mark[id]!=='r1');
   $('summary').innerHTML=`
@@ -1087,9 +1182,13 @@ function renderSegs(){
   const cur=step();
   $('segs').classList.toggle('track',sess.kind==='run');
   if(sess.kind==='run'){
-    const d=Object.keys(sess.res).length;
+    const d=sess.items.filter(id=>sess.res[id]!==undefined).length;
     $('segs').innerHTML=`<i class="runbar" style="--p:${d/sess.items.length*100}"></i>`;
-    $('tick').textContent=`${d}/${sess.items.length}`;
+    $('tick').textContent=`${d} of ${sess.items.length}`;
+    const n={r1:0,r2:0,r3:0,rx:0};
+    for(const id of sess.items){const m=sess.mark[id]||(sess.res[id]===false?'rx':null);if(m)n[m]++}
+    $('runTally').hidden=false;
+    $('runTally').innerHTML=`<span><i style="background:var(--ok)"></i>${n.r1} first try</span><span><i style="background:var(--r2)"></i>${n.r2} second</span><span><i style="background:var(--r3)"></i>${n.r3} third</span><span><i style="background:var(--bad)"></i>${n.rx} missed</span>`;
     return;
   }
   $('segs').innerHTML=sess.items.map(id=>{
@@ -1099,8 +1198,9 @@ function renderSegs(){
     if(sess.kind==='team'&&cls==='now')return`<i style="background:color-mix(in oklab,var(--t${cur.team?'b':'a'}) 40%,var(--land-out))"></i>`;
     return`<i class="${cls}"></i>`;
   }).join('');
-  if(sess.kind==='team'){$('tick').textContent=`${Math.min(sess.pos+1,sess.items.length)}/${sess.items.length}`;renderScore()}
-  else if(sess.kind!=='challenge'){const d=Object.keys(sess.res).length;$('tick').textContent=`${d}/${sess.items.length}`}
+  $('runTally').hidden=true;
+  if(sess.kind==='team'){$('tick').textContent=`${Math.min(sess.pos+1,sess.items.length)} of ${sess.items.length}`;renderScore()}
+  else if(sess.kind!=='challenge'){const d=sess.items.filter(id=>sess.res[id]!==undefined).length;$('tick').textContent=`${d} of ${sess.items.length}`}
 }
 function renderCombo(pop){
   const el=$('combo');
@@ -1134,7 +1234,7 @@ function ask(reset=false){
   $('showme').hidden=false;
   if(s.teach){
     kk.textContent='New country';kk.className='kicker new';
-    $('pMsg').innerHTML=`This is <b>${esc(c.name)}</b>. Study its location, then continue.`;
+    $('pMsg').innerHTML=`This is <b>${esc(c.name)}</b>${c.cap?`, capital ${esc(c.cap)}`:''}. Study its location, then continue.`;
     $('showme').innerHTML='Continue <kbd>Space</kbd>';$('showme').classList.add('next');
   }else{
     kk.textContent=sess.kind==='review'?`Review in ${REG[region].name}`:sess.kind==='trouble'?`Trouble spot in ${REG[region].name}`:kicker();
@@ -1146,19 +1246,22 @@ function ask(reset=false){
   renderSegs();
   if(reset||curRegion!==region)project(region,true);
   $('bar').focus({preventScroll:true});
+  sess.autoZoom=false;
   if(s.teach){
     setCls(id,'tgt',true);
     const nbs=c.nb.filter(n=>members(curRegion).includes(n));
-    setLabels(nbs);
+    sess.anchors=nbs;
+    setLabels([...new Set([...nbs,...(sess.named||[])])]);
     ensureVisible([id,...nbs.slice(0,6)],24);
     fxLabel(id,c.name,'t');
     sTeach();
   }else{
     const k=peek(id);
     if(sess.kind!=='challenge'&&sess.kind!=='team'&&sess.kind!=='run'&&k.b<=1){
-      const anchors=members(curRegion).filter(x=>x!==id&&peek(x).b>=2);
-      setLabels(anchors);
-    }else setLabels([]);
+      sess.anchors=members(curRegion).filter(x=>x!==id&&peek(x).b>=2);
+    }else sess.anchors=[];
+    sess.anchors=sess.anchors.filter(x=>x!==id);
+    setLabels([...new Set([...sess.anchors,...(sess.named||[])])].filter(x=>x!==id));
   }
 }
 
@@ -1169,7 +1272,11 @@ function grade(id,correct){
   if(correct){bumpGoal();sess.combo++;sess.best=Math.max(sess.best,sess.combo)}else sess.combo=0;
   if(sess.kind!=='challenge'){
     const k=card(id),now=Date.now();k.n++;
-    if(correct){k.c++;if(k.b===0||k.lastDay!==today()){k.b=Math.min(6,k.b+1);k.lastDay=today()}k.due=now+INT[k.b]}
+    if(correct){
+      k.c++;
+      if(k.b===0||k.lastDay!==today()){k.b=Math.min(6,k.b+1);k.lastDay=today();k.due=now+INT[k.b]}
+      else{const t=new Date();t.setHours(24,0,0,0);k.due=t.getTime()}
+    }
     else{k.w++;k.b=k.b>=3?1:0;k.due=now}
     paint();
   }
@@ -1214,7 +1321,7 @@ function onPick(id,pt){
     if(id===t&&sess.kind==='team'){
       grade(t,true);
       const tm=step().team;sess.score[tm]+=3;sess.owner[t]=tm;
-      setCls(t,tm?'tb':'ta',true);ripple(pt);sOk(2);
+      setCls(t,tm?'tb':'ta',true);ripple(pt);sOk(2);nameIt(t);
       clearFx();fxLabel(t,C.get(t).name,'rise');
       $('pMsg').innerHTML=`<span class="ok">+3 for ${TEAM[tm]}.</span> ${esc(C.get(t).name)} is claimed.`;
       renderSegs();advance();
@@ -1226,12 +1333,14 @@ function onPick(id,pt){
       setCls(t,'ok',true);ripple(pt);sOk(sess.combo);
       clearFx();fxLabel(t,C.get(t).name,'rise');
       const k=peek(t);
-      $('pMsg').innerHTML=first&&sess.kind!=='challenge'&&k.b===3?`<span class="ok">Mastered.</span> ${esc(C.get(t).name)} is now fully charted.`:`<span class="ok">${['Correct.','Right.','Yes.','Nice.'][Math.floor(Math.random()*4)]}</span>`;
+      const cap=C.get(t).cap?` Capital: ${esc(C.get(t).cap)}.`:'';
+      $('pMsg').innerHTML=first&&sess.kind!=='challenge'&&k.b===3?`<span class="ok">Mastered.</span> ${esc(C.get(t).name)} is now fully charted.${cap}`:`<span class="ok">${['Correct.','Right.','Yes.','Nice.'][Math.floor(Math.random()*4)]}</span>${cap}`;
+      nameIt(t);
       renderCombo(true);renderSegs();
       advance();
     }else miss(t,id,pt);
   }else if(sess.phase==='reveal'){
-    if(id===t){setCls(t,'reveal',false);setCls(t,'ok',true);ripple(pt);sOk(0);advance()}
+    if(id===t){setCls(t,'reveal',false);setCls(t,'ok',true);ripple(pt);sOk(0);nameIt(t);advance()}
     else{shake(id);sBad()}
   }
 }
@@ -1247,7 +1356,7 @@ function miss(t,picked,pt){
     const near=C.has(picked)&&C.get(t).nb.includes(picked);
     if(near&&sess.kind==='team'){const tm=step().team;sess.score[tm]+=1;line=`<span class="bad">Close. That's ${pn},</span> right next door. +1 for ${TEAM[tm]}. Tap ${tn} to continue.`}
     else if(near)line=`<span class="bad">Close. That's ${pn},</span> right next door. Tap ${tn} to continue.`;
-    else line=`<span class="bad">That's ${pn}.</span> ${tn} is ${relText(picked,t)} of there. Tap it to continue.`;
+    else{const rel=relText(picked,t);line=`<span class="bad">That's ${pn}${C.has(picked)?'':', a territory rather than a country'}.</span> ${rel==='elsewhere'?`${tn} is highlighted.`:`${tn} is ${rel} of there.`} Tap it to continue.`}
     if(C.has(picked)&&sess.kind!=='challenge'&&sess.kind!=='team'){
       const cf=S.conf[t]||(S.conf[t]={});cf[picked]=(cf[picked]||0)+1;
       if(cf[picked]>=2)line+=` You've mixed these two up before.`;
@@ -1257,6 +1366,7 @@ function miss(t,picked,pt){
     $('pMsg').innerHTML=line;
   }else $('pMsg').innerHTML=`Here it is. Tap <b>${tn}</b> to continue.`;
   setCls(t,'reveal',true);fxLabel(t,C.get(t).name,'t');
+  sess.autoZoom=true;
   ensureVisible(picked&&C.has(picked)?[t,picked]:[t],markers.some(m=>m.id===t)?70:0);
   $('showme').innerHTML='Next country <kbd>Space</kbd>';$('showme').classList.add('next');
   renderCombo(false);renderSegs();
@@ -1271,7 +1381,8 @@ function skip(){
     return;
   }
   if(sess.phase==='ask')miss(step().id,null,null);
-  else if(sess.phase==='reveal'||sess.phase==='feedback'||sess.phase==='teach')nextQuestion();
+  else if(sess.phase==='reveal'){nameIt(step().id);nextQuestion()}
+  else if(sess.phase==='feedback'||sess.phase==='teach')nextQuestion();
 }
 $('quit').onclick=()=>{if(mode==='play'&&sess&&Object.keys(sess.res).length>0&&sess.kind!=='challenge')finish();else goHome()};
 addEventListener('keydown',e=>{
@@ -1297,8 +1408,10 @@ function finish(){
   const ms=Date.now()-s.t0;
   if(s.kind==='challenge'&&!s.replay)S.chal={date:today(),score:first,ms,res:s.items.map(id=>s.res[id]?1:0)};
   save();
-  show('summary');
+  show('summary');svg.classed('blank',s.kind==='challenge');
   project(s.kind==='learn'?s.region:'world',true);
+  if(s.kind==='challenge')for(const id of s.items)setCls(id,s.res[id]?'r1':'rx',true);
+  setLabels(ids);
   const charted=ids.filter(id=>s.before[id]===0&&peek(id).b>0);
   const mastered=ids.filter(id=>s.before[id]<3&&peek(id).b>=3);
   for(const id of charted)setCls(id,'hlr',true);
@@ -1307,7 +1420,7 @@ function finish(){
   let shareTxt='';
   const head=s.kind==='challenge'?`${first} of 10 in ${fmtTime(ms)}`:`${first} of ${ids.length} right first time`;
   const kick=s.kind==='challenge'?(s.replay?'Daily challenge, practice round':'Daily challenge'):s.kind==='learn'?REG[s.region].name:s.kind==='review'?'Review':'Trouble spots';
-  if(s.kind==='challenge')shareTxt=`Blank Atlas ${today()}\n${s.items.map(id=>s.res[id]?'🟩':'🟥').join('')}\n${first}/10 in ${fmtTime(ms)}`;
+  if(s.kind==='challenge')shareTxt=`Blank Atlas ${today()}\n${s.items.map(id=>s.res[id]?'🟩':'🟥').join('')}\n${first}/10 in ${fmtTime(ms)}\nhttps://blank-atlas.pages.dev/`;
   const reg=s.kind==='learn'?regionStats(s.region):null;
   const g=goalN();
   $('summary').innerHTML=`
@@ -1371,7 +1484,7 @@ function showInfo(id){
   revealedIds.add(id);
   const k=peek(id);
   box.innerHTML=header+`
-    <dl><dt>Capital</dt><dd class="cap"></dd><dt>Region</dt><dd>${esc(REG[c.r].name)}</dd><dt>Your map</dt><dd>${k.b>=3?'Mastered':k.c>0?'Charted':'Uncharted'}</dd></dl>
+    <dl><dt>Capital</dt><dd class="cap"></dd><dt>Region</dt><dd>${esc(REG[c.r].name)}</dd><dt>Area</dt><dd>${c.area.toLocaleString('en')} km²</dd><dt>Your map</dt><dd>${k.b>=3?'Mastered':k.c>0?'Charted':'Uncharted'}</dd></dl>
     ${c.nb.length?`<div><p class="sub">Shares a border with</p><div class="chips">${c.nb.map(n=>`<button data-n="${n}">${C.get(n).flag} ${esc(C.get(n).name)}</button>`).join('')}</div></div>`:`<p class="sub" style="margin:0">No land borders with other countries.</p>`}`;
   box.querySelector('h2').textContent=c.flag+' '+c.name;
   box.querySelector('.info-close').onclick=closeInfo;
@@ -1391,6 +1504,7 @@ addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{
   project(curRegion||'world');refreshLabels();
   if(center&&center.every(Number.isFinite)){const p=proj(center);if(p&&p.every(Number.isFinite))svg.call(zoom.transform,d3.zoomIdentity.translate(W/2-p[0]*k,H/2-p[1]*k).scale(k))}
   if(mode==='play'&&sess){
+    clearFx();
     const id=step().id;
     if(sess.phase==='teach'||sess.phase==='reveal'){
       setCls(id,sess.phase==='teach'?'tgt':'reveal',true);
@@ -1399,5 +1513,5 @@ addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{
   }else if(mode==='explore'&&!$('info').hidden&&exploredId)showInfo(exploredId);
 },150)});
 
-show('home');renderHome();project('world');
+show('home');renderHome();project('world');homeLabels();
 </script>

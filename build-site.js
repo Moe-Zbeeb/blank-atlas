@@ -24,6 +24,7 @@ const html=`<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="author" content="Mohamad Zbib">
 <meta name="description" content="Learn every country on the world map. Click to find countries, chart your own atlas, and play with a friend.">
 <meta name="theme-color" content="#f1f3ef" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#101b2a" media="(prefers-color-scheme: dark)">
@@ -32,6 +33,13 @@ const html=`<!doctype html>
 <meta property="og:title" content="Blank Atlas">
 <meta property="og:description" content="Learn every country on the world map, one click at a time.">
 <meta property="og:type" content="website">
+<meta property="og:url" content="https://blank-atlas.pages.dev/">
+<meta property="og:image" content="https://blank-atlas.pages.dev/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Blank Atlas: a hatched world map with South America and Europe coloured in">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.webmanifest">
 ${head.trim()}
