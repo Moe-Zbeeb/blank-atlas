@@ -21,6 +21,7 @@
   --map-glow:transparent;
   --label-bg:var(--raise);
   --label-edge:var(--rule);
+  --tab-on:var(--raise);
   --ink:#16242a;
   --muted:#5a6a70;
   --rule:#d5dcdb;
@@ -37,17 +38,17 @@
   --f-water:"Newsreader",Georgia,"Times New Roman",serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --paper:#101b2a;--ocean:#081321;--water-ink:#8eb3c9;--grat:#203b50;--land:#2e455a;--hatch:#456078;--land-out:#1b2b3d;--edge:#a6c0d1;
-  --edge-out:#577187;--edge-width:1.2;--hatch-opacity:.25;--map-glow:#19364b80;--label-bg:#112337;--label-edge:#678ba6;
-  --ink:#edf4fa;--muted:#acbdcd;--rule:#3b5065;--raise:#18283a;--accent:#ff70bb;--accent-ink:#290d1d;--accent-soft:#44213b;
-  --ok:#4ccb80;--bad:#ff6d50;--ta:#5e95ff;--tb:#f2b52c;--r2:#f0c53e;--r3:#ff9a4a;--t0:#94793c;--t1:#557f46;--t2:#97554d;--t3:#625a96;--t4:#3b8079;
-  --shadow:inset 0 1px 0 #b8d7ee10,0 2px 6px #02070c40,0 12px 32px #02070c66;color-scheme:dark}}
+  --paper:#0f191c;--ocean:#0a1417;--water-ink:#7298a2;--grat:#15272c;--land:#212f33;--hatch:#3d5357;--land-out:#1b282c;--edge:#6a858c;
+  --edge-out:#33474c;--edge-width:1;--hatch-opacity:1;--map-glow:#173840a0;--label-bg:#0f191c;--label-edge:#4d666c;--tab-on:#2b3d42;
+  --ink:#ebefe7;--muted:#9babaa;--rule:#2a3c41;--raise:#142024;--accent:#ff62b0;--accent-ink:#2b0618;--accent-soft:#3d1a2e;
+  --ok:#55cc8a;--bad:#ff7259;--ta:#6c9cff;--tb:#f2b52c;--r2:#ecc244;--r3:#ff9b52;--t0:#d4ad58;--t1:#86c26e;--t2:#e08677;--t3:#9d8fe0;--t4:#4db8aa;
+  --shadow:inset 0 1px 0 #e8f2ee0d,0 2px 6px #0000004d,0 14px 36px #00000080;color-scheme:dark}}
 :root[data-theme="dark"]{
-  --paper:#101b2a;--ocean:#081321;--water-ink:#8eb3c9;--grat:#203b50;--land:#2e455a;--hatch:#456078;--land-out:#1b2b3d;--edge:#a6c0d1;
-  --edge-out:#577187;--edge-width:1.2;--hatch-opacity:.25;--map-glow:#19364b80;--label-bg:#112337;--label-edge:#678ba6;
-  --ink:#edf4fa;--muted:#acbdcd;--rule:#3b5065;--raise:#18283a;--accent:#ff70bb;--accent-ink:#290d1d;--accent-soft:#44213b;
-  --ok:#4ccb80;--bad:#ff6d50;--ta:#5e95ff;--tb:#f2b52c;--r2:#f0c53e;--r3:#ff9a4a;--t0:#94793c;--t1:#557f46;--t2:#97554d;--t3:#625a96;--t4:#3b8079;
-  --shadow:inset 0 1px 0 #b8d7ee10,0 2px 6px #02070c40,0 12px 32px #02070c66;color-scheme:dark}
+  --paper:#0f191c;--ocean:#0a1417;--water-ink:#7298a2;--grat:#15272c;--land:#212f33;--hatch:#3d5357;--land-out:#1b282c;--edge:#6a858c;
+  --edge-out:#33474c;--edge-width:1;--hatch-opacity:1;--map-glow:#173840a0;--label-bg:#0f191c;--label-edge:#4d666c;--tab-on:#2b3d42;
+  --ink:#ebefe7;--muted:#9babaa;--rule:#2a3c41;--raise:#142024;--accent:#ff62b0;--accent-ink:#2b0618;--accent-soft:#3d1a2e;
+  --ok:#55cc8a;--bad:#ff7259;--ta:#6c9cff;--tb:#f2b52c;--r2:#ecc244;--r3:#ff9b52;--t0:#d4ad58;--t1:#86c26e;--t2:#e08677;--t3:#9d8fe0;--t4:#4db8aa;
+  --shadow:inset 0 1px 0 #e8f2ee0d,0 2px 6px #0000004d,0 14px 36px #00000080;color-scheme:dark}
 :root[data-theme="light"]{color-scheme:light}
 
 [hidden]{display:none!important}
@@ -128,7 +129,7 @@ button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-off
 .tabs button{white-space:nowrap}
 .tabs{display:inline-flex;gap:2px;background:var(--land-out);border-radius:9px;padding:2px}
 .tabs button{min-height:44px;padding:8px 14px;border-radius:7px;font-size:13px;font-weight:600;color:var(--muted)}
-.tabs button[aria-pressed="true"]{background:var(--raise);color:var(--ink);box-shadow:0 1px 2px #0002}
+.tabs button[aria-pressed="true"]{background:var(--tab-on);color:var(--ink);box-shadow:0 1px 2px #0002}
 #modeNote{margin:10px 0 0;font-size:13px;line-height:1.45;color:var(--muted);min-height:2.9em}
 .h-status{display:flex;gap:10px;align-items:center;position:relative}
 .pillbox{display:flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--rule);border-radius:999px;padding:6px 14px 6px 8px;box-shadow:var(--shadow);font-size:14px;font-weight:700;white-space:nowrap}
@@ -545,6 +546,8 @@ function applyTheme(){
   if(S.theme==='system')delete document.documentElement.dataset.theme;
   else document.documentElement.dataset.theme=S.theme;
   document.querySelectorAll('#themeChoices button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.theme===S.theme)));
+  const bar={light:'#f1f3ef',dark:'#0a1417'};
+  document.querySelectorAll('meta[name="theme-color"]').forEach(m=>{m.content=bar[S.theme==='system'?(m.media.includes('dark')?'dark':'light'):S.theme]});
 }
 applyTheme();
 document.querySelectorAll('#themeChoices button').forEach(b=>b.onclick=()=>{S.theme=b.dataset.theme;applyTheme();save()});
